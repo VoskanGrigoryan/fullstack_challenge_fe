@@ -7,8 +7,10 @@ import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 type IFormInputs = {
+  email: string;
   username: string;
   password: string;
+  confirmPassword: string;
 };
 
 export default function Login() {
@@ -29,22 +31,18 @@ export default function Login() {
   return (
     <AuthContainer>
       <form className="bg-white p-8 rounded-md grid w-[400px]" onSubmit={handleSubmit(onSubmit)}>
-        <p className="text-center text-3xl mb-8">AppSecure: Login</p>
+        <p className="text-center text-3xl mb-8">AppSecure: Register</p>
+        <Input type="text" placeholder="Email" {...register("email")} />
         <Input type="text" placeholder="Username" {...register("username")} />
         <Input type="password" placeholder="Password" {...register("password")} />
-        <p className="mb-8">Forgot your password?</p>
-        {/* <Button
-          text="Login"
-          onClick={() => {
-            handleSubmit(onSubmit);
-          }}
-        /> */}
+        <Input type="password" placeholder="Confirm password" {...register("confirmPassword")} />
+
         <input
           type="submit"
           className="bg-blue-600 hover:bg-blue-700 rounded-md p-2 text-white hover:cursor-pointer"
         />
         <p className="underline mt-4 mx-16 text-center hover:cursor-pointer hover:text-blue-500">
-          <Link href="/auth/register">I don't have an account</Link>
+          <Link href="/auth/login">Already have an account?</Link>
         </p>
       </form>
     </AuthContainer>
