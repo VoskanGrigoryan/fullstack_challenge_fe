@@ -3,6 +3,7 @@ interface Props {
 }
 
 export default function AuthContainer({ children }: Props) {
+  console.log("hey");
   return (
     <div className="min-h-screen min-w-screen flex justify-center items-center bg-blue-400 px-4">
       {children}
