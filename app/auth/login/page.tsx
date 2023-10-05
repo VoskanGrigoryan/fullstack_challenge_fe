@@ -1,10 +1,11 @@
 "use client";
 
 import AuthContainer from "@/components/containers/AuthContainer";
-import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Link from "next/link";
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 type IFormInputs = {
   username: string;
@@ -12,8 +13,9 @@ type IFormInputs = {
 };
 
 export default function Login() {
-  // const { register, handleSubmit, watch } = useForm<IFormInputs>();
-  // const onSubmit: SubmitHandler<IFormInputs> = (data) => console.log(data);
+  const router = useRouter();
+
+  const [userData, setUserData] = useState<IFormInputs>();
 
   const {
     register,
@@ -21,11 +23,20 @@ export default function Login() {
     watch,
     formState: { errors },
   } = useForm<IFormInputs>();
-  const onSubmit: SubmitHandler<IFormInputs> = (data) => console.log(data);
+  // const onSubmit: SubmitHandler<IFormInputs> = (data) => setUserData(data);
+
+  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
+    setUserData(data), loginVerification();
+  };
 
   // console.log(register("username", { required: true, maxLength: 20, pattern: /^[A-Za-z]+$/i }));
 
   //register es una funcion que devuelve un objeto
+
+  const loginVerification = () => {
+    router.push("/home");
+  };
+
   return (
     <AuthContainer>
       <form className="bg-white p-8 rounded-md grid w-[400px]" onSubmit={handleSubmit(onSubmit)}>
@@ -33,12 +44,7 @@ export default function Login() {
         <Input type="text" placeholder="Username" {...register("username")} />
         <Input type="password" placeholder="Password" {...register("password")} />
         <p className="mb-8">Forgot your password?</p>
-        {/* <Button
-          text="Login"
-          onClick={() => {
-            handleSubmit(onSubmit);
-          }}
-        /> */}
+
         <input
           type="submit"
           className="bg-blue-600 hover:bg-blue-700 rounded-md p-2 text-white hover:cursor-pointer"

@@ -21,8 +21,7 @@ const MobileMenu = ({ items }: ListItemsProps) => {
           <li
             key={item.id}
             className="hover:bg-white hover:text-blue-400 hover:cursor-pointer p-4 rounded w-[280px]"
-            // onClick={() => router.push(item.href)}>
-          >
+            onClick={() => router.push(item.href)}>
             <p className="border-b">{item.title}</p>
           </li>
         );
