@@ -18,7 +18,9 @@ export default function Container({ children }: Props) {
   return (
     <div className="min-h-screen min-w-screen grid grid-cols-12">
       <div className="hidden col-span-12 md:col-span-4 lg:col-span-3 md:flex flex-col">
-        <p className="text-3xl p-8 bg-blue-400 text-white text-center">Dashboard</p>
+        <p className="text-2xl p-4 bg-blue-400 text-white text-center">
+          Dashboard
+        </p>
         <SideMenu items={listItems} />
       </div>
 
@@ -28,7 +30,8 @@ export default function Container({ children }: Props) {
           className="px-4 text-2xl"
           onClick={() => {
             setIsMobileMenuOpen(!isMobileMenuOpen);
-          }}>
+          }}
+        >
           menu
         </p>
       </div>
@@ -39,7 +42,8 @@ export default function Container({ children }: Props) {
             className="z-50 bottom-0 mb-4 left-[43%] absolute text-2xl bold"
             onClick={() => {
               setIsMobileMenuOpen(!isMobileMenuOpen);
-            }}>
+            }}
+          >
             Close
           </p>
         </div>
