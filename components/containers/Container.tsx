@@ -23,9 +23,9 @@ export default function Container({ children }: Props) {
       </div>
 
       <div className="bg-blue-400 w-screen h-16 justify-between items-center flex sm:hidden absolute text-white">
-        <p className="px-4">Dashboard</p>
+        <p className="px-4 text-2xl">Dashboard</p>
         <p
-          className="px-4"
+          className="px-4 text-2xl"
           onClick={() => {
             setIsMobileMenuOpen(!isMobileMenuOpen);
           }}>
@@ -33,8 +33,15 @@ export default function Container({ children }: Props) {
         </p>
       </div>
       {isMobileMenuOpen ? (
-        <div className="absolute bg-gray-100 w-[80%] m-0 p-0 h-screen flex sm:hidden shadow-xl">
+        <div className="absolute bg-gray-100 w-[100%] m-0 p-0 h-screen flex sm:hidden shadow-xl">
           <MobileMenu items={listItems} />
+          <p
+            className="z-50 bottom-0 mb-4 left-[43%] absolute text-2xl bold"
+            onClick={() => {
+              setIsMobileMenuOpen(!isMobileMenuOpen);
+            }}>
+            Close
+          </p>
         </div>
       ) : null}
 

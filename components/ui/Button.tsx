@@ -4,12 +4,13 @@ import { ComponentProps } from "react";
 //Lo que esta dentro de llaves son los props custom, text no existe en el elemento button
 interface ButtonProps extends ComponentProps<"button"> {
   text: string;
+  className?: string;
 }
 
-const Button = ({ text, onClick }: ButtonProps) => {
+const Button = ({ text, onClick, className }: ButtonProps) => {
   return (
     <button
-      className="bg-blue-600 hover:bg-blue-700 rounded-md p-2 text-white"
+      className={`bg-blue-500 hover:bg-blue-600 rounded-md p-2 text-white ${className}`}
       type="button"
       onClick={onClick}>
       {text}
