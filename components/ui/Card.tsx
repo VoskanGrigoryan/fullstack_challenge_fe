@@ -8,23 +8,39 @@ const Card = ({ amount }: any) => {
       {amount.map((item: any, i: number) => {
         return (
           <div
-            className="p-4 mx-4 my-2 rounded shadow-lg border border-gray-300 h-[340px]"
+            className="m-2 p-2 rounded-lg shadow-lg border border-gray-200 max-h-[400px] grid grid-rows-12"
             key={i}
           >
-            <p className="text-3xl my-2 h-1/5">Project name</p>
-            <p className="my-2 h-2/5 ellipsis2">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-              Cupiditate eius dolore exercitationem voluptates, eum neque. In
-              labore, provident corrupti earum pariatur suscipit repellendus mai
-              ores at assumenda, libero explicabo.
-            </p>
+            <div>
+              <p className="text-xl mb-2">Project name</p>
+            </div>
 
-            <p className="text-gray-500 h-1/5 ">
-              Last updated: <span className="text-black">05/10/2023</span>
-            </p>
-            <div className="h-1/5 flex justify-between flex-row">
-              <Button text="Open" className=" w-[48%] h-10" />
-              <Button text="Edit" className=" w-[48%] h-10" />
+            <div>
+              <p className="my-2 ">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga
+                explicabo quaerat eos dolorum Lorem, ipsum dolor sit amet
+                consectetur adipisicing elit. Dolores, debitis quibusdam ipsum
+                nulla quaerat laudantium ullam sunt placeat exercitationem non
+                voluptas fugit repellat, quisquam quo recusandae illo sapiente
+                porro sint.
+              </p>
+            </div>
+            <div>
+              <div className="flex">
+                <p className="text-gray-500 text-sm mb-2">Last updated:</p>
+                <span className="text-black text-sm">05/10/2023</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between flex-row">
+              <Button
+                text="Open"
+                className=" w-[48%] h-8 flex justify-center items-center"
+              />
+              <Button
+                text="Edit"
+                className=" w-[48%] h-8 flex justify-center items-center"
+              />
             </div>
           </div>
         );

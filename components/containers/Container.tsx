@@ -3,6 +3,7 @@
 import { useState } from "react";
 import SideMenu from "../ui/SideMenu";
 import MobileMenu from "../ui/MobileMenu";
+import { BurgerIcon, CloseIcon } from "@/icons";
 
 interface Props {
   children: React.ReactNode;
@@ -17,8 +18,8 @@ export default function Container({ children }: Props) {
 
   return (
     <div className="min-h-screen min-w-screen grid grid-cols-12">
-      <div className="hidden col-span-12 md:col-span-4 lg:col-span-3 md:flex flex-col">
-        <p className="text-2xl p-4 bg-blue-400 text-white text-center">
+      <div className="hidden col-span-12 md:col-span-4 lg:col-span-2 md:flex flex-col shadow-lg">
+        <p className="text-2xl p-2 bg-blue-400 text-white text-center">
           Dashboard
         </p>
         <SideMenu items={listItems} />
@@ -32,11 +33,11 @@ export default function Container({ children }: Props) {
             setIsMobileMenuOpen(!isMobileMenuOpen);
           }}
         >
-          menu
+          <BurgerIcon className="fill-white h-12" />
         </p>
       </div>
       {isMobileMenuOpen ? (
-        <div className="absolute bg-gray-100 w-[100%] m-0 p-0 h-screen flex sm:hidden shadow-xl">
+        <div className="absolute bg-blue-400 w-[100%] m-0 p-0 h-screen flex sm:hidden">
           <MobileMenu items={listItems} />
           <p
             className="z-50 bottom-0 mb-4 left-[43%] absolute text-2xl bold"
@@ -44,12 +45,12 @@ export default function Container({ children }: Props) {
               setIsMobileMenuOpen(!isMobileMenuOpen);
             }}
           >
-            Close
+            <CloseIcon className="fill-white h-12" />
           </p>
         </div>
       ) : null}
 
-      <div className="col-span-12 md:col-span-8 lg:col-span-9 shadow-xl mt-20 lg:mt-0">
+      <div className="col-span-12 md:col-span-8 lg:col-span-10 mt-20 lg:mt-0">
         {children}
       </div>
     </div>

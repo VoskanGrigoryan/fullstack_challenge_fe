@@ -21,8 +21,9 @@ const SideMenu = ({ items }: ListItemsProps) => {
         return (
           <li
             key={item.id}
-            className="hover:bg-blue-400 hover:text-white hover:cursor-pointer p-4 rounded"
-            onClick={() => router.push(item.href)}>
+            className="hover:bg-blue-400 hover:text-white hover:cursor-pointer p-2 rounded"
+            onClick={() => router.push(item.href)}
+          >
             {item.title}
           </li>
         );
