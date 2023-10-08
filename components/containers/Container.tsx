@@ -33,7 +33,7 @@ export default function Container({ children }: Props) {
             setIsMobileMenuOpen(!isMobileMenuOpen);
           }}
         >
-          <BurgerIcon className="fill-white h-12" />
+          <BurgerIcon className="fill-white h-12" style={{ height: "40px" }} />
         </p>
       </div>
       {isMobileMenuOpen ? (
