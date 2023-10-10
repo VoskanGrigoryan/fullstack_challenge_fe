@@ -1,58 +1,84 @@
 "use client";
 
-import { useState } from "react";
-import SideMenu from "../ui/SideMenu";
-import MobileMenu from "../ui/MobileMenu";
-import { BurgerIcon, CloseIcon } from "@/icons";
+import React from "react";
+import { Layout, Menu } from "antd";
+import { UploadOutlined, UserOutlined } from "@ant-design/icons";
+import type { MenuProps } from "antd";
+import Link from "next/link";
 
-interface Props {
+interface IProps {
   children: React.ReactNode;
 }
 
-export default function Container({ children }: Props) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const listItems = [
-    { id: "option1", title: "Option 1", href: "/auth/login" },
-    { id: "option2", title: "Option 2", href: "/auth/register" },
+const { Header, Content, Sider } = Layout;
+
+export default function NewContainer({ children }: IProps) {
+  const sideMenuItems: MenuProps["items"] = [
+    {
+      icon: <UploadOutlined />,
+      label: <a href="/home">Dashboard</a>,
+      key: 1,
+    },
+    // {
+    //   icon: <UserOutlined />,
+    //   label: <a href="/auth/register">User</a>,
+    //   key: 2,
+    // },
   ];
 
   return (
-    <div className="min-h-screen min-w-screen grid grid-cols-12">
-      <div className="hidden col-span-12 md:col-span-4 lg:col-span-2 md:flex flex-col shadow-lg">
-        <p className="text-2xl p-2 bg-blue-400 text-white text-center">
-          Dashboard
-        </p>
-        <SideMenu items={listItems} />
-      </div>
-
-      <div className="bg-blue-400 w-screen h-16 justify-between items-center flex sm:hidden absolute text-white">
-        <p className="px-4 text-2xl">Dashboard</p>
-        <p
-          className="px-4 text-2xl"
-          onClick={() => {
-            setIsMobileMenuOpen(!isMobileMenuOpen);
+    <Layout hasSider>
+      <Sider
+        style={{ height: "100vh", backgroundColor: "white" }}
+        breakpoint="lg"
+        collapsedWidth="0"
+        onBreakpoint={(broken) => {
+          console.log(broken);
+        }}
+        onCollapse={(collapsed, type) => {
+          console.log(collapsed, type);
+        }}
+      >
+        <div style={{ height: 64 }}></div>
+        <Menu
+          theme="light"
+          mode="inline"
+          defaultSelectedKeys={["1"]}
+          items={sideMenuItems}
+        />
+      </Sider>
+      <Layout>
+        <Header
+          style={{
+            padding: 0,
+            background: "#4096ff",
+            display: "flex",
+            justifyContent: "flex-end",
           }}
         >
-          <BurgerIcon className="fill-white h-12" style={{ height: "40px" }} />
-        </p>
-      </div>
-      {isMobileMenuOpen ? (
-        <div className="absolute bg-blue-400 w-[100%] m-0 p-0 h-screen flex sm:hidden">
-          <MobileMenu items={listItems} />
-          <p
-            className="z-50 bottom-0 mb-4 left-[43%] absolute text-2xl bold"
-            onClick={() => {
-              setIsMobileMenuOpen(!isMobileMenuOpen);
+          <Link href="/auth/login">
+            <div
+              style={{ display: "flex", flexDirection: "row" }}
+              // onClick={() => router.push("/home")}
+            >
+              <UserOutlined style={{ fontSize: 24, color: "white" }} />
+              <p style={{ color: "white", marginLeft: 8, marginRight: 12 }}>
+                Logout
+              </p>
+            </div>
+          </Link>
+        </Header>
+        <Content>
+          <div
+            style={{
+              padding: 24,
+              minHeight: 360,
             }}
           >
-            <CloseIcon className="fill-white h-12" />
-          </p>
-        </div>
-      ) : null}
-
-      <div className="col-span-12 md:col-span-8 lg:col-span-10 mt-20 lg:mt-0">
-        {children}
-      </div>
-    </div>
+            {children}
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 }

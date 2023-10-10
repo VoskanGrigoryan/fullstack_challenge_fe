@@ -1,10 +1,12 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import AuthContainer from "@/components/containers/AuthContainer";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
+import CButton from "@/components/ui/Button";
+import { KeyOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
+import { Input, Typography } from "antd";
 import Link from "next/link";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 
 type IFormInputs = {
   email: string;
@@ -13,37 +15,82 @@ type IFormInputs = {
   confirmPassword: string;
 };
 
-export default function Login() {
-  // const { register, handleSubmit, watch } = useForm<IFormInputs>();
-  // const onSubmit: SubmitHandler<IFormInputs> = (data) => console.log(data);
+const { Text } = Typography;
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<IFormInputs>();
+export default function Login() {
+  const { handleSubmit, control } = useForm<IFormInputs>();
   const onSubmit: SubmitHandler<IFormInputs> = (data) => console.log(data);
 
-  // console.log(register("username", { required: true, maxLength: 20, pattern: /^[A-Za-z]+$/i }));
-
-  //register es una funcion que devuelve un objeto
   return (
     <AuthContainer>
-      <form className="bg-white p-8 rounded-md grid w-[400px]" onSubmit={handleSubmit(onSubmit)}>
-        <p className="text-center text-3xl mb-8">AppSecure: Register</p>
-        <Input type="text" placeholder="Email" {...register("email")} />
-        <Input type="text" placeholder="Username" {...register("username")} />
-        <Input type="password" placeholder="Password" {...register("password")} />
-        <Input type="password" placeholder="Confirm password" {...register("confirmPassword")} />
-
-        <input
-          type="submit"
-          className="bg-blue-600 hover:bg-blue-700 rounded-md p-2 text-white hover:cursor-pointer"
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <Controller
+          name="email"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Input
+              {...field}
+              placeholder="Email"
+              style={{ marginBottom: "12px" }}
+              prefix={<MailOutlined />}
+            />
+          )}
         />
-        <p className="underline mt-4 mx-16 text-center hover:cursor-pointer hover:text-blue-500">
-          <Link href="/auth/login">Already have an account?</Link>
-        </p>
+        <Controller
+          name="username"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Input
+              {...field}
+              placeholder="Username"
+              style={{ marginBottom: "12px" }}
+              prefix={<UserOutlined />}
+            />
+          )}
+        />
+
+        <Controller
+          name="password"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Input.Password
+              {...field}
+              placeholder="Password"
+              style={{ marginBottom: "12px" }}
+              prefix={<KeyOutlined />}
+            />
+          )}
+        />
+
+        <Controller
+          name="confirmPassword"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Input.Password
+              {...field}
+              placeholder="Confirm password"
+              style={{ marginBottom: "12px" }}
+              prefix={<KeyOutlined />}
+            />
+          )}
+        />
+
+        <CButton htmlType="submit">Login</CButton>
+
+        <Text style={{ marginTop: "12px", textAlign: "center" }}>
+          Already have an account? <Link href="/auth/login">Login</Link>
+        </Text>
       </form>
     </AuthContainer>
   );
