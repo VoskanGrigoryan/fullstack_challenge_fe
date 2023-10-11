@@ -3,7 +3,7 @@ import { CCard } from "@/components/ui/Card";
 import { Row } from "antd";
 
 export default function Home() {
-  const num = [1, 2, 3, 4];
+  const num = [1, 2];
   return (
     <Container>
       <Row>

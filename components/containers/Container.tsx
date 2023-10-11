@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Layout, Menu } from "antd";
-import { UploadOutlined, UserOutlined } from "@ant-design/icons";
+import { FormOutlined, UploadOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import Link from "next/link";
 
@@ -19,11 +19,11 @@ export default function NewContainer({ children }: IProps) {
       label: <a href="/home">Dashboard</a>,
       key: 1,
     },
-    // {
-    //   icon: <UserOutlined />,
-    //   label: <a href="/auth/register">User</a>,
-    //   key: 2,
-    // },
+    {
+      icon: <FormOutlined />,
+      label: "Create project",
+      key: 2,
+    },
   ];
 
   return (
@@ -33,10 +33,10 @@ export default function NewContainer({ children }: IProps) {
         breakpoint="lg"
         collapsedWidth="0"
         onBreakpoint={(broken) => {
-          console.log(broken);
+          // console.log(broken);
         }}
         onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
+          // console.log(collapsed, type);
         }}
       >
         <div style={{ height: 64 }}></div>

@@ -86,7 +86,9 @@ export default function Login() {
           )}
         />
 
-        <CButton htmlType="submit">Login</CButton>
+        <CButton htmlType="submit" type="primary">
+          Register
+        </CButton>
 
         <Text style={{ marginTop: "12px", textAlign: "center" }}>
           Already have an account? <Link href="/auth/login">Login</Link>
