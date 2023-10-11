@@ -1,52 +1,34 @@
-"use client";
+import { Card } from "antd";
+import { Col } from "antd";
+import { SettingOutlined } from "@ant-design/icons";
 
-import Button from "./Button";
-
-const Card = ({ amount }: any) => {
+export const CCard = ({ amount }: any) => {
   return (
     <>
-      {amount.map((item: any, i: number) => {
+      {amount.map((item: any, key: number) => {
         return (
-          <div
-            className="m-2 p-2 rounded-lg shadow-lg border border-gray-200 max-h-[400px] grid grid-rows-12"
-            key={i}
-          >
-            <div>
-              <p className="text-xl mb-2">Project name</p>
-            </div>
-
-            <div>
-              <p className="my-2 ">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga
-                explicabo quaerat eos dolorum Lorem, ipsum dolor sit amet
-                consectetur adipisicing elit. Dolores, debitis quibusdam ipsum
-                nulla quaerat laudantium ullam sunt placeat exercitationem non
-                voluptas fugit repellat, quisquam quo recusandae illo sapiente
-                porro sint.
+          <Col key={key} lg={{ span: 8 }} xs={{ span: 24 }}>
+            <Card
+              title={"Project N° " + key}
+              bordered={false}
+              extra={
+                <a href="#">
+                  <SettingOutlined />
+                </a>
+              }
+              style={{ width: "300px", height: "240px", margin: 10 }}
+              key={key}
+            >
+              <p>
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                Similique enim rerum, aliquid fuga temporibus magnam aliquam
+                quasi accusamus eveniet dicta delectus nihil assumenda quaerat
+                ex, totam, minima expedita iste incidunt?
               </p>
-            </div>
-            <div>
-              <div className="flex">
-                <p className="text-gray-500 text-sm mb-2">Last updated:</p>
-                <span className="text-black text-sm">05/10/2023</span>
-              </div>
-            </div>
-
-            <div className="flex justify-between flex-row">
-              <Button
-                text="Open"
-                className=" w-[48%] h-8 flex justify-center items-center"
-              />
-              <Button
-                text="Edit"
-                className=" w-[48%] h-8 flex justify-center items-center"
-              />
-            </div>
-          </div>
+            </Card>
+          </Col>
         );
       })}
     </>
   );
 };
-
-export default Card;
