@@ -2,22 +2,29 @@
 
 import { useRouter } from "next/navigation";
 //redirect from next/navigate not working for some reason
+import { Result } from "antd";
+import CButton from "@/components/ui/Button";
 
 export default function Custom404() {
   const router = useRouter();
 
   return (
-    <div className="bg-white h-screen w-screen justify-center items-center flex">
-      <div className="p-12 w-fit h-fit rounded-md text-center">
-        <p className="text-9xl">404</p>
-        <p className="text-4xl mb-8">Page doesn't exist</p>
-
-        <p
-          className="hover:cursor-pointer hover:text-blue-700 text-blue-500 text-2xl"
-          onClick={() => router.push("/home")}>
-          Return home
-        </p>
-      </div>
+    <div>
+      <Result
+        status="404"
+        title="404"
+        subTitle="Sorry, the page you visited does not exist."
+        extra={
+          <CButton
+            onClick={() => {
+              router.push("/home");
+            }}
+            style={{ backgroundColor: "#4096ff" }}
+          >
+            Back Home
+          </CButton>
+        }
+      />
     </div>
   );
 }
