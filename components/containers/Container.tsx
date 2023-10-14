@@ -21,8 +21,13 @@ export default function NewContainer({ children }: IProps) {
     },
     {
       icon: <FormOutlined />,
-      label: "Create project",
+      label: <a href="/new-project">Create project</a>,
       key: 2,
+    },
+    {
+      icon: <UserOutlined />,
+      label: <a href="/auth/login">Logout</a>,
+      key: 3,
     },
   ];
 
@@ -56,7 +61,7 @@ export default function NewContainer({ children }: IProps) {
             justifyContent: "flex-end",
           }}
         >
-          <Link href="/auth/login">
+          {/* <Link href="/auth/login">
             <div
               style={{ display: "flex", flexDirection: "row" }}
               // onClick={() => router.push("/home")}
@@ -66,7 +71,7 @@ export default function NewContainer({ children }: IProps) {
                 Logout
               </p>
             </div>
-          </Link>
+          </Link> */}
         </Header>
         <Content>
           <div
