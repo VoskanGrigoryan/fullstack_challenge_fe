@@ -8,4 +8,7 @@ module.exports = {
 
     return config;
   },
+  // experimental: {
+  //   optimizePackageImports: ["antd", "@ant-design/icons"],
+  // },
 };
