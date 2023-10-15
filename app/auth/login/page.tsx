@@ -25,7 +25,7 @@ export default function Login() {
   const { handleSubmit, control } = useForm<IFormInputs>();
 
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {
-    setUserData(data), router.push("/home");
+    setUserData(data), router.push("/dashboard");
   };
 
   //

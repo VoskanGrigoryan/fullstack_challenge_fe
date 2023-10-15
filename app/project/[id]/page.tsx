@@ -2,9 +2,12 @@
 
 import Container from "@/components/containers/Container";
 import {
+  BugOutlined,
   CheckCircleOutlined,
   DeleteOutlined,
   EditOutlined,
+  ExperimentOutlined,
+  ProfileOutlined,
 } from "@ant-design/icons";
 import {
   Card,
@@ -21,6 +24,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { baseURL } from "@/config/api";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import CButton from "@/components/ui/Button";
 
 interface IProject {
   id: number;
@@ -44,6 +49,7 @@ interface ITasks {
 const { Title } = Typography;
 
 export default function Project() {
+  const router = useRouter();
   const params = useParams();
 
   const fetchProject = async () => {
@@ -94,15 +100,16 @@ export default function Project() {
     },
   });
 
-  // console.log(tasks.data?.data);
   const referenceUrl = `/project/${params.id}`;
+
+  console.log(tasksData);
 
   const BreadCrumb = () => {
     return (
       <Breadcrumb
         items={[
           {
-            title: <a href="/home">Dashboard</a>,
+            title: <a href="/dashboard">Dashboard</a>,
           },
           {
             title: "Project",
@@ -117,9 +124,28 @@ export default function Project() {
 
   if (isError || tasks.data?.data.length === 0) {
     return (
-      <Container>
+      <Container menuItem={"1"}>
         <div style={{ padding: 24, minHeight: 500, backgroundColor: "white" }}>
-          <BreadCrumb />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <BreadCrumb />
+            <div>
+              <CButton
+                type="primary"
+                onClick={() => {
+                  router.push("/new-task/" + params.id);
+                }}
+              >
+                Add task
+              </CButton>
+            </div>
+          </div>
+
           <Empty />
         </div>
       </Container>
@@ -127,13 +153,54 @@ export default function Project() {
   }
 
   return (
-    <Container>
+    <Container menuItem={"1"}>
       <div style={{ padding: 24, minHeight: 500, backgroundColor: "white" }}>
-        <BreadCrumb />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <BreadCrumb />
+          <div>
+            <CButton
+              type="primary"
+              onClick={() => {
+                router.push("/new-task/" + params.id);
+              }}
+            >
+              Add task
+            </CButton>
+          </div>
+        </div>
         <Skeleton loading={isLoading}>
           <Title level={3}>{}</Title>
           <Row gutter={16}>
             {tasksData?.map((item: any, key: number) => {
+              const icon = () => {
+                if (item.task_type === "bug") {
+                  return (
+                    <BugOutlined style={{ color: "purple", fontSize: 20 }} />
+                  );
+                }
+
+                if (item.task_type === "task") {
+                  return (
+                    <ProfileOutlined
+                      style={{ color: "DodgerBlue", fontSize: 20 }}
+                    />
+                  );
+                }
+
+                if (item.task_type === "issue") {
+                  return (
+                    <ExperimentOutlined
+                      style={{ color: "red", fontSize: 20 }}
+                    />
+                  );
+                }
+              };
               return (
                 <Col
                   key={key}
@@ -144,6 +211,7 @@ export default function Project() {
                   <Card
                     title={item.title}
                     style={{ width: "auto" }}
+                    extra={icon()}
                     actions={[
                       <Popconfirm
                         key="done"
@@ -159,7 +227,10 @@ export default function Project() {
                         <CheckCircleOutlined key="done" />,
                       </Popconfirm>,
 
-                      <EditOutlined key="edit" />,
+                      <EditOutlined
+                        key="edit"
+                        onClick={() => router.push("/edit-task/" + item.id)}
+                      />,
                       <Popconfirm
                         key="delete"
                         title="Delete the task"

@@ -9,20 +9,22 @@ export default function Custom404() {
   const router = useRouter();
 
   return (
-    <div>
+    <div style={{ display: "flex", justifyContent: "center" }}>
       <Result
         status="404"
         title="404"
         subTitle="Sorry, the page you visited does not exist."
         extra={
-          <CButton
-            onClick={() => {
-              router.push("/home");
-            }}
-            style={{ backgroundColor: "#4096ff" }}
-          >
-            Back Home
-          </CButton>
+          <div style={{ width: 350 }}>
+            <CButton
+              onClick={() => {
+                router.push("/dashboard");
+              }}
+              style={{ backgroundColor: "#4096ff" }}
+            >
+              Back Home
+            </CButton>
+          </div>
         }
       />
     </div>

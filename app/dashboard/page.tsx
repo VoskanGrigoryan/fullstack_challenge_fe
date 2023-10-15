@@ -34,7 +34,7 @@ export default function Home() {
 
   if (isError) {
     return (
-      <Container>
+      <Container menuItem={"1"}>
         <Empty />
       </Container>
     );
@@ -42,7 +42,7 @@ export default function Home() {
 
   if (isError || data?.data.length === 0) {
     return (
-      <Container>
+      <Container menuItem={"1"}>
         <div style={{ padding: 24, minHeight: 500, backgroundColor: "white" }}>
           <Empty />
         </div>
@@ -51,7 +51,7 @@ export default function Home() {
   }
 
   return (
-    <Container>
+    <Container menuItem={"1"}>
       <div style={{ padding: 24, minHeight: 500 }}>
         <Row>
           {isLoading ? (
