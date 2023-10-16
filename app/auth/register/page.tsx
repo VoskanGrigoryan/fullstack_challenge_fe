@@ -19,7 +19,7 @@ const { Text } = Typography;
 
 export default function Login() {
   const { handleSubmit, control } = useForm<IFormInputs>();
-  const onSubmit: SubmitHandler<IFormInputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<IFormInputs> = (data) => {};
 
   return (
     <AuthContainer>

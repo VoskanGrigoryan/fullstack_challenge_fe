@@ -4,19 +4,19 @@ import React from "react";
 import { Layout, Menu } from "antd";
 import { FormOutlined, UploadOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import Link from "next/link";
 
 interface IProps {
   children: React.ReactNode;
+  menuItem: string;
 }
 
 const { Header, Content, Sider } = Layout;
 
-export default function NewContainer({ children }: IProps) {
+export default function NewContainer({ children, menuItem }: IProps) {
   const sideMenuItems: MenuProps["items"] = [
     {
       icon: <UploadOutlined />,
-      label: <a href="/home">Dashboard</a>,
+      label: <a href="/dashboard">Dashboard</a>,
       key: 1,
     },
     {
@@ -48,7 +48,7 @@ export default function NewContainer({ children }: IProps) {
         <Menu
           theme="light"
           mode="inline"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={[menuItem]}
           items={sideMenuItems}
         />
       </Sider>
@@ -60,19 +60,7 @@ export default function NewContainer({ children }: IProps) {
             display: "flex",
             justifyContent: "flex-end",
           }}
-        >
-          {/* <Link href="/auth/login">
-            <div
-              style={{ display: "flex", flexDirection: "row" }}
-              // onClick={() => router.push("/home")}
-            >
-              <UserOutlined style={{ fontSize: 24, color: "white" }} />
-              <p style={{ color: "white", marginLeft: 8, marginRight: 12 }}>
-                Logout
-              </p>
-            </div>
-          </Link> */}
-        </Header>
+        ></Header>
         <Content>
           <div
             style={{

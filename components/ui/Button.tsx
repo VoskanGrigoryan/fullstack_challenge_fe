@@ -4,10 +4,9 @@ import { Button, ButtonProps } from "antd";
 //Lo que esta dentro de llaves son- los props custom, text no existe en el elemento button
 interface BaseButtonProps extends ButtonProps {}
 
-//Cosas a agregar
 const CButton = ({ children, type = "primary", ...props }: BaseButtonProps) => {
   return (
-    <Button type={type} {...props}>
+    <Button type={type} {...props} style={{ minWidth: 140, width: "100%" }}>
       {children}
     </Button>
   );

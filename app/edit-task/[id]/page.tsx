@@ -1,15 +1,19 @@
 "use client";
 
 import Container from "@/components/containers/Container";
+import EditTaskForm from "@/components/forms/edit-task";
+import { useParams } from "next/navigation";
 import { notification } from "antd";
 
-import NewProjectForm from "@/components/forms/new-project";
+export default function EditItem() {
+  const params = useParams();
 
-export default function NewProject() {
   const [api, contextHolder] = notification.useNotification();
 
+  const taskId = parseInt(params.id as string);
+
   return (
-    <Container menuItem={"2"}>
+    <Container menuItem={"1"}>
       {contextHolder}
       <div
         style={{
@@ -19,7 +23,7 @@ export default function NewProject() {
           backgroundColor: "white",
         }}
       >
-        <NewProjectForm api={api} />
+        <EditTaskForm api={api} taskId={taskId} />
       </div>
     </Container>
   );

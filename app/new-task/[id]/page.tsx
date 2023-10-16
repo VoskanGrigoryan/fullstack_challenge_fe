@@ -3,13 +3,13 @@
 import Container from "@/components/containers/Container";
 import { notification } from "antd";
 
-import NewProjectForm from "@/components/forms/new-project";
+import NewTaskForm from "@/components/forms/new-task";
 
-export default function NewProject() {
+export default function NewTask() {
   const [api, contextHolder] = notification.useNotification();
 
   return (
-    <Container menuItem={"2"}>
+    <Container menuItem={""}>
       {contextHolder}
       <div
         style={{
@@ -19,7 +19,7 @@ export default function NewProject() {
           backgroundColor: "white",
         }}
       >
-        <NewProjectForm api={api} />
+        <NewTaskForm />
       </div>
     </Container>
   );
