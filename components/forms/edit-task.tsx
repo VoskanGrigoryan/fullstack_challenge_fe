@@ -7,17 +7,16 @@ import CButton from "../ui/Button";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { baseURL } from "@/config/api";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 type IFormInputs = {
-  title: string;
-  description: string;
-  assigned_to: string;
-  severity: number;
-  project_id: number;
-  owner_user_id: number;
-  task_type: string;
+  title: string | undefined;
+  description: string | undefined;
+  assigned_to: string | undefined;
+  severity: any | undefined;
+  project_id: number | undefined;
+  owner_user_id: number | undefined;
+  task_type: string | undefined;
 };
 
 type NotificationType = "success" | "info" | "warning" | "error";
@@ -26,25 +25,52 @@ interface ITask {
   title: string;
   description: string;
   assigned_to: string;
-  severity: number;
+  severity: undefined;
   task_type: string;
 }
 
 const { Title } = Typography;
 
-export default function NewTaskForm({ api }: any) {
-  const params = useParams();
+export default function EditTaskForm({
+  api,
+  taskId,
+}: {
+  api: any;
+  taskId: number;
+}) {
   const router = useRouter();
 
-  const { handleSubmit, control } = useForm<IFormInputs>();
+  const fetchTaskData = async () => {
+    const task = await axios.get(baseURL + "tasks/task/" + taskId);
+
+    return task;
+  };
+
+  const { isLoading, isError, data, error } = useQuery<
+    AxiosResponse<IFormInputs>,
+    AxiosError<any>
+  >({
+    queryKey: ["task_to_update"],
+    // refetchOnWindowFocus: false,
+    queryFn: fetchTaskData,
+  });
+
+  const { handleSubmit, control } = useForm<IFormInputs>({
+    values: {
+      assigned_to: data?.data.assigned_to,
+      description: data?.data.description,
+      severity: data?.data.severity,
+      task_type: data?.data.task_type,
+      title: data?.data.title,
+      project_id: data?.data.project_id,
+      owner_user_id: data?.data.owner_user_id,
+    },
+  });
 
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {
-    // if(typeof params.id === "string") {
-    //     parseInt(params.id)
-    // }
-
-    data.project_id = parseInt(params.id as string);
-    data.owner_user_id = 2;
+    console.log(data);
+    // data.project_id = parseInt(params.id as string);
+    // data.owner_user_id = 2;
 
     mutate({ data });
   };
@@ -60,22 +86,23 @@ export default function NewTaskForm({ api }: any) {
     });
   };
 
-  const { mutate, isLoading, isError } = useMutation<
+  const { mutate } = useMutation<
     AxiosResponse<ITask>,
     AxiosError<any>,
-    { data: ITask }
+    { data: IFormInputs }
   >({
     mutationFn: async ({ data }) => {
-      const project = await axios
-        .post(baseURL + "tasks", data)
+      const task = await axios
+        .patch(baseURL + "tasks/" + taskId, data)
         .catch(function (error) {
-          console.log(error);
           openNotificationWithIcon("error", error.code, error.message);
+
           return error;
         });
 
-      router.push("/project/" + params.id);
-      return project;
+      //
+      router.push("/project/" + data.project_id);
+      return task;
     },
   });
 
@@ -85,7 +112,7 @@ export default function NewTaskForm({ api }: any) {
       style={{ display: "table", clear: "both" }}
     >
       <div style={{ float: "left", marginBottom: 20 }}>
-        <Title level={3}>Task creation</Title>
+        <Title level={4}>Edit task: </Title>
         <Controller
           name="title"
           control={control}
@@ -117,7 +144,7 @@ export default function NewTaskForm({ api }: any) {
         />
 
         <CButton htmlType="submit" type="primary">
-          Create task
+          Edit task
         </CButton>
       </div>
 
@@ -129,7 +156,7 @@ export default function NewTaskForm({ api }: any) {
           flexDirection: "column",
         }}
       >
-        <p style={{ width: 120, marginTop: 40 }}>Assigned to:</p>
+        <p style={{ width: 120, marginTop: 34 }}>Assigned to:</p>
         <Controller
           name="assigned_to"
           control={control}
