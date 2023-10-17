@@ -1,8 +1,4 @@
-import {
-  DeleteOutlined,
-  EditOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, SettingOutlined } from "@ant-design/icons";
 import { Dropdown, MenuProps, Popconfirm } from "antd";
 import { useRouter } from "next/navigation";
 
@@ -27,8 +23,8 @@ export default function ProjectMenu({
       icon: <DeleteOutlined />,
       label: (
         <Popconfirm
-          title="Delete the task"
-          description="Are you sure to delete this task?"
+          title="Delete project"
+          description="Are you sure to delete this project?"
           onConfirm={() => {
             mutate({ id });
           }}

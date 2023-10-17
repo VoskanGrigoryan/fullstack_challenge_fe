@@ -1,16 +1,10 @@
-import { Card, Dropdown, Modal } from "antd";
+import { Card } from "antd";
 import { Col } from "antd";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
+
 import { useRouter } from "next/navigation";
-import type { MenuProps } from "antd";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { baseURL } from "@/config/api";
-import { useState } from "react";
 import ProjectMenu from "./menus/projectMenu";
 
 export const CCard = ({ projects }: any) => {
@@ -34,28 +28,8 @@ export const CCard = ({ projects }: any) => {
     },
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <>
-      <Modal
-        title="Basic Modal"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      ></Modal>
       {projects?.map((item: any, key: number) => {
         let itemId = item.id;
         return (
