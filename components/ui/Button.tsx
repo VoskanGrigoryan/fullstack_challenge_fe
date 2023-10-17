@@ -6,7 +6,11 @@ interface BaseButtonProps extends ButtonProps {}
 
 const CButton = ({ children, type = "primary", ...props }: BaseButtonProps) => {
   return (
-    <Button type={type} {...props} style={{ minWidth: 140, width: "100%" }}>
+    <Button
+      type={type}
+      {...props}
+      style={{ minWidth: 140, width: "100%", marginBottom: 8 }}
+    >
       {children}
     </Button>
   );

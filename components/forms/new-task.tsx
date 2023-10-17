@@ -18,6 +18,7 @@ type IFormInputs = {
   project_id: number;
   owner_user_id: number;
   task_type: string;
+  active: boolean;
 };
 
 type NotificationType = "success" | "info" | "warning" | "error";
@@ -45,6 +46,7 @@ export default function NewTaskForm({ api }: any) {
 
     data.project_id = parseInt(params.id as string);
     data.owner_user_id = 2;
+    data.active = true;
 
     mutate({ data });
   };

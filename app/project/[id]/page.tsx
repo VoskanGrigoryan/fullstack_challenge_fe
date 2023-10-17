@@ -7,6 +7,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   ExperimentOutlined,
+  MenuUnfoldOutlined,
   ProfileOutlined,
 } from "@ant-design/icons";
 import {
@@ -19,13 +20,18 @@ import {
   message,
   Empty,
   Breadcrumb,
+  Tooltip,
+  MenuProps,
+  Dropdown,
 } from "antd";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { baseURL } from "@/config/api";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import CButton from "@/components/ui/Button";
+import { useState } from "react";
+import TaskMenu from "@/components/ui/menus/tasks";
+import TaskType from "@/components/util/TaskType";
 
 interface IProject {
   id: number;
@@ -44,6 +50,7 @@ interface ITasks {
   due_date: string;
   severity: number;
   project_id: number;
+  active: boolean;
 }
 
 const { Title } = Typography;
@@ -51,6 +58,8 @@ const { Title } = Typography;
 export default function Project() {
   const router = useRouter();
   const params = useParams();
+
+  const [showCompletedTask, setShowCompletedTask] = useState(false);
 
   const fetchProject = async () => {
     const project = await axios.get(baseURL + "projects/" + params.id);
@@ -84,7 +93,7 @@ export default function Project() {
 
   //Get -> useQuery
   //post, delete, patch -> useMutation | cualquier peticion qeu no trae info
-  const { mutate } = useMutation<
+  const deleteMutation = useMutation<
     AxiosResponse<ITasks>,
     AxiosError<any>,
     { selectedItemId: number }
@@ -100,9 +109,32 @@ export default function Project() {
     },
   });
 
-  const referenceUrl = `/project/${params.id}`;
+  const completeMutation = useMutation<
+    AxiosResponse<ITasks>,
+    AxiosError<any>,
+    { selectedItemId: number; item: ITasks }
+  >({
+    mutationFn: async ({ selectedItemId, item }) => {
+      // console.log(item);
 
-  console.log(tasksData);
+      item.active = false;
+      const project = await axios.patch(
+        baseURL + "tasks/" + selectedItemId,
+        item
+      );
+
+      return project;
+    },
+
+    onSuccess: () => {
+      tasks.refetch();
+    },
+  });
+
+  const nonCompletedTasks = tasksData?.filter((item) => item.active === true);
+  const completedTasks = tasksData?.filter((item) => item.active === false);
+
+  const referenceUrl = `/project/${params.id}`;
 
   const BreadCrumb = () => {
     return (
@@ -134,16 +166,11 @@ export default function Project() {
             }}
           >
             <BreadCrumb />
-            <div>
-              <CButton
-                type="primary"
-                onClick={() => {
-                  router.push("/new-task/" + params.id);
-                }}
-              >
-                Add task
-              </CButton>
-            </div>
+            <TaskMenu
+              id={params.id as string}
+              showCompletedTask={showCompletedTask}
+              setShowCompletedTask={setShowCompletedTask}
+            />
           </div>
 
           <Empty />
@@ -163,44 +190,16 @@ export default function Project() {
           }}
         >
           <BreadCrumb />
-          <div>
-            <CButton
-              type="primary"
-              onClick={() => {
-                router.push("/new-task/" + params.id);
-              }}
-            >
-              Add task
-            </CButton>
-          </div>
+          <TaskMenu
+            id={params.id as string}
+            showCompletedTask={showCompletedTask}
+            setShowCompletedTask={setShowCompletedTask}
+          />
         </div>
         <Skeleton loading={isLoading}>
           <Title level={3}>{}</Title>
-          <Row gutter={16}>
-            {tasksData?.map((item: any, key: number) => {
-              const icon = () => {
-                if (item.task_type === "bug") {
-                  return (
-                    <BugOutlined style={{ color: "purple", fontSize: 20 }} />
-                  );
-                }
-
-                if (item.task_type === "task") {
-                  return (
-                    <ProfileOutlined
-                      style={{ color: "DodgerBlue", fontSize: 20 }}
-                    />
-                  );
-                }
-
-                if (item.task_type === "issue") {
-                  return (
-                    <ExperimentOutlined
-                      style={{ color: "red", fontSize: 20 }}
-                    />
-                  );
-                }
-              };
+          <Row gutter={12}>
+            {nonCompletedTasks?.map((item: any, key: number) => {
               return (
                 <Col
                   key={key}
@@ -211,7 +210,7 @@ export default function Project() {
                   <Card
                     title={item.title}
                     style={{ width: "auto" }}
-                    extra={icon()}
+                    extra={<TaskType task_type={item.task_type} />}
                     actions={[
                       <Popconfirm
                         key="done"
@@ -220,7 +219,10 @@ export default function Project() {
                         okText="Yes"
                         onConfirm={() => {
                           message.success("Task completed successfully! :)");
-                          mutate({ selectedItemId: item.id });
+                          completeMutation.mutate({
+                            selectedItemId: item.id,
+                            item,
+                          });
                         }}
                         cancelText="No"
                       >
@@ -238,7 +240,7 @@ export default function Project() {
                         okText="Yes"
                         onConfirm={() => {
                           message.success("Task deleted successfully");
-                          mutate({ selectedItemId: item.id });
+                          deleteMutation.mutate({ selectedItemId: item.id });
                         }}
                         cancelText="No"
                       >
@@ -252,6 +254,29 @@ export default function Project() {
               );
             })}
           </Row>
+
+          {showCompletedTask ? (
+            <Row gutter={12}>
+              {completedTasks?.map((item: any, key: number) => {
+                return (
+                  <Col
+                    key={key}
+                    lg={{ span: 8 }}
+                    xs={{ span: 24 }}
+                    style={{ marginBottom: 12 }}
+                  >
+                    <Card
+                      title={item.title}
+                      style={{ width: "auto" }}
+                      extra={<p>Completed</p>}
+                    >
+                      {item.description}
+                    </Card>
+                  </Col>
+                );
+              })}
+            </Row>
+          ) : null}
         </Skeleton>
       </div>
     </Container>

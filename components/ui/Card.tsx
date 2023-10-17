@@ -1,4 +1,4 @@
-import { Card, Dropdown } from "antd";
+import { Card, Dropdown, Modal } from "antd";
 import { Col } from "antd";
 import {
   DeleteOutlined,
@@ -10,35 +10,21 @@ import type { MenuProps } from "antd";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { baseURL } from "@/config/api";
+import { useState } from "react";
+import ProjectMenu from "./menus/projectMenu";
 
 export const CCard = ({ projects }: any) => {
   const router = useRouter();
 
   const queryClient = useQueryClient();
 
-  const items: MenuProps["items"] = [
-    {
-      key: "1",
-      icon: <EditOutlined />,
-      label: <a href="/new">Edit project</a>,
-    },
-    {
-      key: "2",
-      danger: true,
-      icon: <DeleteOutlined />,
-      label: "Delete project",
-    },
-  ];
-
   const { mutate } = useMutation<
     AxiosResponse<any>,
     AxiosError<any>,
-    { selectedItemId: number }
+    { id: number }
   >({
-    mutationFn: async ({ selectedItemId }) => {
-      const project = await axios.delete(
-        baseURL + "projects/" + selectedItemId
-      );
+    mutationFn: async ({ id }) => {
+      const project = await axios.delete(baseURL + "projects/" + id);
 
       return project;
     },
@@ -48,12 +34,28 @@ export const CCard = ({ projects }: any) => {
     },
   });
 
-  const test = (itemId: number) => {
-    mutate({ selectedItemId: itemId });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   return (
     <>
+      <Modal
+        title="Basic Modal"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      ></Modal>
       {projects?.map((item: any, key: number) => {
         let itemId = item.id;
         return (
@@ -61,21 +63,7 @@ export const CCard = ({ projects }: any) => {
             <Card
               title={item.title}
               bordered={false}
-              extra={
-                <Dropdown
-                  menu={{
-                    items,
-                    onClick: () => {
-                      test(itemId);
-                    },
-                  }}
-                  trigger={["click"]}
-                >
-                  <a>
-                    <SettingOutlined />
-                  </a>
-                </Dropdown>
-              }
+              extra={<ProjectMenu id={itemId} mutate={mutate} />}
               style={{
                 width: "300px",
                 maxHeight: "400px",

@@ -143,9 +143,18 @@ export default function EditTaskForm({
           )}
         />
 
-        <CButton htmlType="submit" type="primary">
-          Edit task
-        </CButton>
+        <div>
+          <CButton
+            htmlType="submit"
+            type="primary"
+            style={{ marginBottom: 20 }}
+          >
+            Edit task
+          </CButton>
+          <CButton htmlType="reset" type="default">
+            Cancel
+          </CButton>
+        </div>
       </div>
 
       <div

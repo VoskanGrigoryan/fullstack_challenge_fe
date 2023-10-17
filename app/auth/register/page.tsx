@@ -4,6 +4,7 @@
 import AuthContainer from "@/components/containers/AuthContainer";
 import CButton from "@/components/ui/Button";
 import { KeyOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
+import { ErrorMessage } from "@hookform/error-message";
 import { Input, Typography } from "antd";
 import Link from "next/link";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
@@ -15,10 +16,14 @@ type IFormInputs = {
   confirmPassword: string;
 };
 
+interface FormInputs {
+  singleErrorInput: string;
+}
+
 const { Text } = Typography;
 
 export default function Login() {
-  const { handleSubmit, control } = useForm<IFormInputs>();
+  const { handleSubmit, control, watch } = useForm<IFormInputs>();
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {};
 
   return (
@@ -34,7 +39,10 @@ export default function Login() {
         <Controller
           name="email"
           control={control}
-          rules={{ required: true }}
+          rules={{
+            required: "This is not a valid email",
+            pattern: /^\S+@\S+$/i,
+          }}
           render={({ field }) => (
             <Input
               {...field}
@@ -44,6 +52,7 @@ export default function Login() {
             />
           )}
         />
+
         <Controller
           name="username"
           control={control}
@@ -75,7 +84,14 @@ export default function Login() {
         <Controller
           name="confirmPassword"
           control={control}
-          rules={{ required: true }}
+          rules={{
+            required: true,
+            validate: (val: string) => {
+              if (watch("password") != val) {
+                return "Your passwords do no match";
+              }
+            },
+          }}
           render={({ field }) => (
             <Input.Password
               {...field}
