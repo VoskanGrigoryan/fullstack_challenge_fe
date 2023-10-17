@@ -6,6 +6,7 @@ import { createCache, extractStyle, StyleProvider } from "@ant-design/cssinjs";
 export const RootStyleRegistry = ({ children }: PropsWithChildren) => {
   const [cache] = useState(() => createCache());
 
+  //Loads ANTD styles before loading page
   useServerInsertedHTML(() => {
     return (
       <script
