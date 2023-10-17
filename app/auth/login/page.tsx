@@ -9,11 +9,20 @@ import { useRouter } from "next/navigation";
 import { KeyOutlined, UserOutlined } from "@ant-design/icons";
 import { Input, Typography } from "antd";
 import CButton from "@/components/ui/Button";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 type IFormInputs = {
   username: string;
   password: string;
 };
+
+const schema = yup
+  .object({
+    username: yup.string().required(),
+    password: yup.string().required(),
+  })
+  .required();
 
 const { Text } = Typography;
 
@@ -22,7 +31,13 @@ export default function Login() {
 
   const [userData, setUserData] = useState<IFormInputs>();
 
-  const { handleSubmit, control } = useForm<IFormInputs>();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<IFormInputs>({
+    resolver: yupResolver(schema),
+  });
 
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {
     setUserData(data), router.push("/dashboard");
@@ -46,12 +61,17 @@ export default function Login() {
           render={({ field }) => (
             <Input
               {...field}
+              status={errors.username?.message ? "error" : ""}
               placeholder="Username"
-              style={{ marginBottom: "12px" }}
+              style={{ marginTop: "12px" }}
               prefix={<UserOutlined />}
             />
           )}
         />
+
+        <p style={{ padding: 0, margin: 0, color: "red" }}>
+          {errors.username?.message}
+        </p>
 
         <Controller
           name="password"
@@ -60,17 +80,23 @@ export default function Login() {
           render={({ field }) => (
             <Input.Password
               {...field}
+              status={errors.password?.message ? "error" : ""}
               placeholder="input password"
-              style={{ marginBottom: "12px" }}
+              style={{ marginTop: "12px" }}
               prefix={<KeyOutlined />}
             />
           )}
         />
 
-        <CButton htmlType="submit" type="primary">
-          Login
-        </CButton>
+        <p style={{ padding: 0, margin: 0, color: "red" }}>
+          {errors.password?.message}
+        </p>
 
+        <div style={{ marginTop: 20 }}>
+          <CButton htmlType="submit" type="primary">
+            Login
+          </CButton>
+        </div>
         <Text style={{ marginTop: "12px", textAlign: "center" }}>
           Don't have an account yet? <Link href="/auth/register">Register</Link>
         </Text>

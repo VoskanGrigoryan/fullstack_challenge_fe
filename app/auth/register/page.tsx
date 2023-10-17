@@ -4,10 +4,11 @@
 import AuthContainer from "@/components/containers/AuthContainer";
 import CButton from "@/components/ui/Button";
 import { KeyOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
-import { ErrorMessage } from "@hookform/error-message";
 import { Input, Typography } from "antd";
 import Link from "next/link";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 type IFormInputs = {
   email: string;
@@ -20,10 +21,29 @@ interface FormInputs {
   singleErrorInput: string;
 }
 
+const schema = yup
+  .object({
+    email: yup.string().email().required(),
+    username: yup.string().required(),
+    password: yup.string().required(),
+    confirmPassword: yup
+      .string()
+      .required("confirm password is required")
+      .oneOf([yup.ref("password")], "Passwords must match"),
+  })
+  .required();
+
 const { Text } = Typography;
 
 export default function Login() {
-  const { handleSubmit, control, watch } = useForm<IFormInputs>();
+  const {
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<IFormInputs>({
+    resolver: yupResolver(schema),
+  });
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {};
 
   return (
@@ -45,13 +65,18 @@ export default function Login() {
           }}
           render={({ field }) => (
             <Input
+              status={errors.email?.message ? "error" : ""}
               {...field}
               placeholder="Email"
-              style={{ marginBottom: "12px" }}
+              style={{ marginTop: "12px" }}
               prefix={<MailOutlined />}
             />
           )}
         />
+
+        <p style={{ padding: 0, margin: 0, color: "red" }}>
+          {errors.email?.message}
+        </p>
 
         <Controller
           name="username"
@@ -60,12 +85,17 @@ export default function Login() {
           render={({ field }) => (
             <Input
               {...field}
+              status={errors.username?.message ? "error" : ""}
               placeholder="Username"
-              style={{ marginBottom: "12px" }}
+              style={{ marginTop: "12px" }}
               prefix={<UserOutlined />}
             />
           )}
         />
+
+        <p style={{ padding: 0, margin: 0, color: "red" }}>
+          {errors.username?.message}
+        </p>
 
         <Controller
           name="password"
@@ -74,37 +104,41 @@ export default function Login() {
           render={({ field }) => (
             <Input.Password
               {...field}
+              status={errors.password?.message ? "error" : ""}
               placeholder="Password"
-              style={{ marginBottom: "12px" }}
+              style={{ marginTop: "12px" }}
               prefix={<KeyOutlined />}
             />
           )}
         />
+
+        <p style={{ padding: 0, margin: 0, color: "red" }}>
+          {errors.password?.message}
+        </p>
 
         <Controller
           name="confirmPassword"
           control={control}
-          rules={{
-            required: true,
-            validate: (val: string) => {
-              if (watch("password") != val) {
-                return "Your passwords do no match";
-              }
-            },
-          }}
+          rules={{ required: true }}
           render={({ field }) => (
             <Input.Password
               {...field}
+              status={errors.confirmPassword?.message ? "error" : ""}
               placeholder="Confirm password"
-              style={{ marginBottom: "12px" }}
+              style={{ marginTop: "12px" }}
               prefix={<KeyOutlined />}
             />
           )}
         />
+        <p style={{ padding: 0, margin: 0, color: "red" }}>
+          {errors.confirmPassword?.message}
+        </p>
 
-        <CButton htmlType="submit" type="primary">
-          Register
-        </CButton>
+        <div style={{ marginTop: 20 }}>
+          <CButton htmlType="submit" type="primary">
+            Register
+          </CButton>
+        </div>
 
         <Text style={{ marginTop: "12px", textAlign: "center" }}>
           Already have an account? <Link href="/auth/login">Login</Link>
