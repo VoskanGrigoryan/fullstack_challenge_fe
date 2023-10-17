@@ -8,25 +8,35 @@ import axios, { AxiosResponse, AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { baseURL } from "@/config/api";
 import { useRouter } from "next/navigation";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-type IFormInputs = {
-  title: string;
-  description: string;
+interface IFormInputs extends IProject {
   owner_user_id: number;
-};
+}
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
 interface IProject {
   title: string;
   description: string;
-  owner_user_id: number;
 }
+
+const schema = yup
+  .object({
+    title: yup.string().required(),
+    description: yup.string().required(),
+  })
+  .required();
 
 export default function NewProjectForm({ api }: any) {
   const router = useRouter();
 
-  const { handleSubmit, control } = useForm<IFormInputs>();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<IProject>({ resolver: yupResolver(schema) });
 
   const openNotificationWithIcon = (
     type: NotificationType,
@@ -39,16 +49,21 @@ export default function NewProjectForm({ api }: any) {
     });
   };
 
-  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
-    data.owner_user_id = 2;
+  const onSubmit: SubmitHandler<IProject> = (values) => {
+    // data.owner_user_id = 2;
 
-    mutate({ data });
+    mutate({
+      data: {
+        ...values,
+        owner_user_id: 2,
+      },
+    });
   };
 
   const { mutate, isLoading, isError } = useMutation<
     AxiosResponse<IProject>,
     AxiosError<any>,
-    { data: IProject }
+    { data: IFormInputs }
   >({
     mutationFn: async ({ data }) => {
       const project = await axios
@@ -71,8 +86,10 @@ export default function NewProjectForm({ api }: any) {
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
+        width: "50%",
       }}
     >
+      <h2 style={{ marginBottom: 20 }}>Project creation</h2>
       <Controller
         name="title"
         control={control}
@@ -80,13 +97,18 @@ export default function NewProjectForm({ api }: any) {
         render={({ field }) => (
           <Input
             {...field}
+            status={errors.title?.message ? "error" : ""}
             maxLength={100}
             addonBefore="Project title"
             placeholder="Title"
-            style={{ marginBottom: "12px" }}
           />
         )}
       />
+
+      <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
+        {errors.title?.message}
+      </p>
+
       <Controller
         name="description"
         control={control}
@@ -94,13 +116,17 @@ export default function NewProjectForm({ api }: any) {
         render={({ field }) => (
           <TextArea
             {...field}
+            status={errors.description?.message ? "error" : ""}
             maxLength={500}
-            style={{ marginBottom: "12px" }}
             placeholder="Short description of the project, what are the objectives and core ideas"
             autoSize={{ minRows: 8, maxRows: 5 }}
           />
         )}
       />
+
+      <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
+        {errors.description?.message}
+      </p>
 
       <div style={{ display: "flex", flexDirection: "row" }}>
         <div style={{ marginRight: 20 }}>

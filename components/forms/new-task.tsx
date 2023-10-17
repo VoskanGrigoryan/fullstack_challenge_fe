@@ -9,17 +9,14 @@ import { baseURL } from "@/config/api";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-type IFormInputs = {
-  title: string;
-  description: string;
-  assigned_to: string;
-  severity: number;
+interface IFormInputs extends ITask {
   project_id: number;
   owner_user_id: number;
-  task_type: string;
   active: boolean;
-};
+}
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
@@ -33,22 +30,45 @@ interface ITask {
 
 const { Title } = Typography;
 
+const schema = yup
+  .object({
+    title: yup.string().required(),
+    description: yup.string().required(),
+    assigned_to: yup.string().required("assigned to is a required field"),
+    severity: yup.number().positive().integer().required(),
+    task_type: yup.string().required("task type is a required field"),
+  })
+  .required();
+
 export default function NewTaskForm({ api }: any) {
   const params = useParams();
   const router = useRouter();
 
-  const { handleSubmit, control } = useForm<IFormInputs>();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<ITask>({
+    resolver: yupResolver(schema),
+  });
 
-  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
+  const onSubmit: SubmitHandler<ITask> = (values) => {
     // if(typeof params.id === "string") {
     //     parseInt(params.id)
     // }
 
-    data.project_id = parseInt(params.id as string);
-    data.owner_user_id = 2;
-    data.active = true;
+    // values.project_id = parseInt(params.id as string);
+    // values.owner_user_id = 2;
+    // values.active = true;
 
-    mutate({ data });
+    mutate({
+      data: {
+        ...values,
+        active: true,
+        owner_user_id: 2,
+        project_id: parseInt(params.id as string),
+      },
+    });
   };
 
   const openNotificationWithIcon = (
@@ -65,7 +85,7 @@ export default function NewTaskForm({ api }: any) {
   const { mutate, isLoading, isError } = useMutation<
     AxiosResponse<ITask>,
     AxiosError<any>,
-    { data: ITask }
+    { data: IFormInputs }
   >({
     mutationFn: async ({ data }) => {
       const project = await axios
@@ -95,13 +115,17 @@ export default function NewTaskForm({ api }: any) {
           render={({ field }) => (
             <Input
               {...field}
+              status={errors.title?.message ? "error" : ""}
               maxLength={100}
               addonBefore="Task title"
               placeholder="Title"
-              style={{ marginBottom: "12px" }}
             />
           )}
         />
+
+        <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
+          {errors.title?.message}
+        </p>
 
         <Controller
           name="description"
@@ -110,13 +134,17 @@ export default function NewTaskForm({ api }: any) {
           render={({ field }) => (
             <TextArea
               {...field}
+              status={errors.description?.message ? "error" : ""}
               maxLength={500}
-              style={{ marginBottom: "12px" }}
               placeholder="Short description of the task, what are the objectives and core ideas"
               autoSize={{ minRows: 8, maxRows: 5 }}
             />
           )}
         />
+
+        <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
+          {errors.description?.message}
+        </p>
 
         <CButton htmlType="submit" type="primary">
           Create task
@@ -139,6 +167,7 @@ export default function NewTaskForm({ api }: any) {
           render={({ field }) => (
             <Mentions
               {...field}
+              status={errors.assigned_to?.message ? "error" : ""}
               style={{ width: "100%" }}
               defaultValue=""
               options={[
@@ -159,6 +188,10 @@ export default function NewTaskForm({ api }: any) {
           )}
         />
 
+        <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
+          {errors.assigned_to?.message}
+        </p>
+
         <p style={{ marginTop: 18 }}>Severity:</p>
         <Controller
           name="severity"
@@ -167,6 +200,7 @@ export default function NewTaskForm({ api }: any) {
           render={({ field }) => (
             <Select
               {...field}
+              status={errors.severity?.message ? "error" : ""}
               defaultValue=""
               style={{ width: "full" }}
               options={[
@@ -179,6 +213,10 @@ export default function NewTaskForm({ api }: any) {
           )}
         />
 
+        <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
+          {errors.severity?.message}
+        </p>
+
         <p style={{ marginTop: 18 }}>Task type:</p>
         <Controller
           name="task_type"
@@ -187,6 +225,7 @@ export default function NewTaskForm({ api }: any) {
           render={({ field }) => (
             <Select
               {...field}
+              status={errors.task_type?.message ? "error" : ""}
               defaultValue=""
               style={{ width: "full" }}
               options={[
@@ -197,6 +236,10 @@ export default function NewTaskForm({ api }: any) {
             />
           )}
         />
+
+        <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
+          {errors.task_type?.message}
+        </p>
       </div>
     </form>
   );
