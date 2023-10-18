@@ -4,29 +4,32 @@ import React from "react";
 import { Layout, Menu } from "antd";
 import { FormOutlined, UploadOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 interface IProps {
   children: React.ReactNode;
-  menuItem: string;
 }
 
 const { Header, Content, Sider } = Layout;
 
-export default function NewContainer({ children, menuItem }: IProps) {
+export default function Container({ children }: IProps) {
+  const pathname = usePathname();
+
   const sideMenuItems: MenuProps["items"] = [
     {
       icon: <UploadOutlined />,
-      label: <a href="/dashboard">Dashboard</a>,
-      key: 1,
+      label: <Link href="/dashboard">Dashboard</Link>,
+      key: "/dashboard",
     },
     {
       icon: <FormOutlined />,
-      label: <a href="/new-project">Create project</a>,
-      key: 2,
+      label: <Link href="/new-project">Create project</Link>,
+      key: "/new-project",
     },
     {
       icon: <UserOutlined />,
-      label: <a href="/auth/login">Logout</a>,
+      label: <Link href="/auth/login">Logout</Link>,
       key: 3,
     },
   ];
@@ -37,18 +40,12 @@ export default function NewContainer({ children, menuItem }: IProps) {
         style={{ height: "100vh", backgroundColor: "white" }}
         breakpoint="lg"
         collapsedWidth="0"
-        onBreakpoint={(broken) => {
-          // console.log(broken);
-        }}
-        onCollapse={(collapsed, type) => {
-          // console.log(collapsed, type);
-        }}
       >
         <div style={{ height: 64 }}></div>
         <Menu
           theme="light"
           mode="inline"
-          defaultSelectedKeys={[menuItem]}
+          selectedKeys={[pathname]}
           items={sideMenuItems}
         />
       </Sider>

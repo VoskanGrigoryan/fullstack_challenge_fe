@@ -1,16 +1,13 @@
 import { Card } from "antd";
 import { Col } from "antd";
-
 import { useRouter } from "next/navigation";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { baseURL } from "@/config/api";
 import ProjectMenu from "./menus/projectMenu";
 
 export const CCard = ({ projects }: any) => {
   const router = useRouter();
-
-  const queryClient = useQueryClient();
 
   const { mutate } = useMutation<
     AxiosResponse<any>,
@@ -24,7 +21,10 @@ export const CCard = ({ projects }: any) => {
     },
 
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["projects"] });
+      // queryClient.refetchQueries({ queryKey: ["projects"] });
+
+      //Recarga la parte del ssr
+      router.refresh();
     },
   });
 
