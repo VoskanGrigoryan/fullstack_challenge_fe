@@ -30,5 +30,5 @@ export default function TaskType({ task_type }: { task_type: string }) {
     );
   }
 
-  return <p>asdfasdf</p>;
+  return <p>Generic</p>;
 }
