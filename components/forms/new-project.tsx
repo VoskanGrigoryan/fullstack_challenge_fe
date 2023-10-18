@@ -4,16 +4,10 @@ import CButton from "@/components/ui/Button";
 import { Input } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import axios, { AxiosResponse, AxiosError } from "axios";
-import { useMutation } from "@tanstack/react-query";
-import { baseURL } from "@/config/api";
 import { useRouter } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-
-interface IFormInputs extends IProject {
-  owner_user_id: number;
-}
+import { useCreateProject } from "@/services/useCreateProject";
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
@@ -32,12 +26,6 @@ const schema = yup
 export default function NewProjectForm({ api }: any) {
   const router = useRouter();
 
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<IProject>({ resolver: yupResolver(schema) });
-
   const openNotificationWithIcon = (
     type: NotificationType,
     title?: string,
@@ -49,35 +37,35 @@ export default function NewProjectForm({ api }: any) {
     });
   };
 
-  const onSubmit: SubmitHandler<IProject> = (values) => {
-    // data.owner_user_id = 2;
+  const mutation = useCreateProject({
+    onSettled: (data, error) => {
+      if (data) {
+        router.push("/dashboard");
+      }
 
-    mutate({
-      data: {
-        ...values,
-        owner_user_id: 2,
-      },
-    });
-  };
-
-  const { mutate, isLoading, isError } = useMutation<
-    AxiosResponse<IProject>,
-    AxiosError<any>,
-    { data: IFormInputs }
-  >({
-    mutationFn: async ({ data }) => {
-      const project = await axios
-        .post(baseURL + "projects", data)
-        .catch(function (error) {
-          console.log(error);
-          openNotificationWithIcon("error", error.code, error.message);
-          return error;
-        });
-
-      router.push("/dashboard");
-      return project;
+      if (error) {
+        openNotificationWithIcon(
+          "error",
+          "Error",
+          "There was an error, try again"
+        );
+      }
     },
   });
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<IProject>({ resolver: yupResolver(schema) });
+
+  const onSubmit: SubmitHandler<IProject> = (values) => {
+    mutation.mutate({
+      title: values.title,
+      description: values.description,
+      owner_user_id: 2,
+    });
+  };
 
   return (
     <form

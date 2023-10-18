@@ -2,13 +2,9 @@
 
 import Container from "@/components/containers/Container";
 import {
-  BugOutlined,
   CheckCircleOutlined,
   DeleteOutlined,
   EditOutlined,
-  ExperimentOutlined,
-  MenuUnfoldOutlined,
-  ProfileOutlined,
 } from "@ant-design/icons";
 import {
   Card,
@@ -20,38 +16,17 @@ import {
   message,
   Empty,
   Breadcrumb,
-  Tooltip,
-  MenuProps,
-  Dropdown,
 } from "antd";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import axios, { AxiosResponse, AxiosError } from "axios";
-import { baseURL } from "@/config/api";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import TaskMenu from "@/components/ui/menus/tasks";
 import TaskType from "@/components/util/TaskType";
-
-interface IProject {
-  id: number;
-  title: string;
-  description: string;
-  creator: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ITasks {
-  id: number;
-  title: string;
-  description: string;
-  assigned_to: string;
-  due_date: string;
-  severity: number;
-  project_id: number;
-  active: boolean;
-}
+import useGetProjectById from "@/services/useGetProject";
+import { useDeleteTaskById } from "@/services/useDeleteTask";
+import useGetTasks from "@/services/useGetTasks";
+import CBreadCrumb from "@/components/ui/Breadcrumb";
+import { useCompleteTask } from "@/services/useCompleteTask";
 
 const { Title } = Typography;
 
@@ -61,100 +36,34 @@ export default function Project() {
 
   const [showCompletedTask, setShowCompletedTask] = useState(false);
 
-  const fetchProject = async () => {
-    const project = await axios.get(baseURL + "projects/" + params.id);
+  const variables = { id: params.id };
 
-    return project;
-  };
+  const project = useGetProjectById({ variables });
+  const tasks = useGetTasks({ variables });
 
-  const { isLoading, isError, data, error } = useQuery<
-    AxiosResponse<IProject>,
-    AxiosError<any>
-  >({
-    queryKey: ["project"],
-    queryFn: fetchProject,
+  const deleteMutation = useDeleteTaskById({
+    onSuccess: () => {
+      message.success("Task deleted successfully! :)");
+      tasks.refetch();
+    },
   });
-
-  const fetchTasksByProjectId = async () => {
-    const project = await axios.get(baseURL + "tasks/" + params.id);
-
-    return project;
-  };
-
-  const tasks = useQuery<AxiosResponse<ITasks[]>, AxiosError<any>>({
-    queryKey: ["tasks"],
-    queryFn: fetchTasksByProjectId,
-  });
-
-  let tasksData = tasks.data?.data;
-
-  // React Hook to use inside a component
-  //Peticiones realizadas con useMutation no se cachean, funciones que interactua con un recurso
 
   //Get -> useQuery
   //post, delete, patch -> useMutation | cualquier peticion qeu no trae info
-  const deleteMutation = useMutation<
-    AxiosResponse<ITasks>,
-    AxiosError<any>,
-    { selectedItemId: number }
-  >({
-    mutationFn: async ({ selectedItemId }) => {
-      const project = await axios.delete(baseURL + "tasks/" + selectedItemId);
 
-      return project;
-    },
-
+  const completeMutation = useCompleteTask({
     onSuccess: () => {
+      message.success("Task completed successfully! :)");
       tasks.refetch();
     },
   });
 
-  const completeMutation = useMutation<
-    AxiosResponse<ITasks>,
-    AxiosError<any>,
-    { selectedItemId: number; item: ITasks }
-  >({
-    mutationFn: async ({ selectedItemId, item }) => {
-      // console.log(item);
-
-      item.active = false;
-      const project = await axios.patch(
-        baseURL + "tasks/" + selectedItemId,
-        item
-      );
-
-      return project;
-    },
-
-    onSuccess: () => {
-      tasks.refetch();
-    },
-  });
-
-  const nonCompletedTasks = tasksData?.filter((item) => item.active === true);
-  const completedTasks = tasksData?.filter((item) => item.active === false);
+  const nonCompletedTasks = tasks.data?.filter((item) => item.active === true);
+  const completedTasks = tasks.data?.filter((item) => item.active === false);
 
   const referenceUrl = `/project/${params.id}`;
 
-  const BreadCrumb = () => {
-    return (
-      <Breadcrumb
-        items={[
-          {
-            title: <a href="/dashboard">Dashboard</a>,
-          },
-          {
-            title: "Project",
-          },
-          {
-            title: <a href={referenceUrl}>{data?.data.title}</a>,
-          },
-        ]}
-      />
-    );
-  };
-
-  if (isError || tasks.data?.data.length === 0) {
+  if (tasks.isError || tasks.data?.length === 0) {
     return (
       <Container menuItem={"1"}>
         <div style={{ padding: 24, minHeight: 500, backgroundColor: "white" }}>
@@ -165,7 +74,10 @@ export default function Project() {
               justifyContent: "space-between",
             }}
           >
-            <BreadCrumb />
+            <CBreadCrumb
+              referenceUrl={referenceUrl}
+              projectTitle={project.data?.title}
+            />
             <TaskMenu
               id={params.id as string}
               showCompletedTask={showCompletedTask}
@@ -189,17 +101,21 @@ export default function Project() {
             justifyContent: "space-between",
           }}
         >
-          <BreadCrumb />
+          <CBreadCrumb
+            referenceUrl={referenceUrl}
+            projectTitle={project.data?.title}
+          />
           <TaskMenu
             id={params.id as string}
             showCompletedTask={showCompletedTask}
             setShowCompletedTask={setShowCompletedTask}
           />
         </div>
-        <Skeleton loading={isLoading}>
+        <Skeleton loading={tasks.isLoading}>
           <Title level={3}>{}</Title>
           <Row gutter={12}>
             {nonCompletedTasks?.map((item: any, key: number) => {
+              console.log(item);
               return (
                 <Col
                   key={key}
@@ -218,10 +134,15 @@ export default function Project() {
                         description="Are you sure you want complete the task?"
                         okText="Yes"
                         onConfirm={() => {
-                          message.success("Task completed successfully! :)");
                           completeMutation.mutate({
-                            selectedItemId: item.id,
-                            item,
+                            id: item.id,
+                            title: item.title,
+                            description: item.description,
+                            assigned_to: item.assigned_to,
+                            due_date: item.due_date,
+                            severity: item.severity,
+                            project_id: item.project_id,
+                            active: false,
                           });
                         }}
                         cancelText="No"
@@ -239,8 +160,10 @@ export default function Project() {
                         description="Are you sure you want to delete the task?"
                         okText="Yes"
                         onConfirm={() => {
-                          message.success("Task deleted successfully");
-                          deleteMutation.mutate({ selectedItemId: item.id });
+                          // deleteMutation.mutate({ selectedItemId: item.id });
+                          deleteMutation.mutate({
+                            id: item.id,
+                          });
                         }}
                         cancelText="No"
                       >

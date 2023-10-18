@@ -4,19 +4,11 @@ import { Input, Mentions, Select, Typography } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import CButton from "../ui/Button";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { baseURL } from "@/config/api";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-
-interface IFormInputs extends ITask {
-  project_id: number;
-  owner_user_id: number;
-  active: boolean;
-}
+import { useCreateTask } from "@/services/useCreateTask";
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
@@ -53,21 +45,11 @@ export default function NewTaskForm({ api }: any) {
   });
 
   const onSubmit: SubmitHandler<ITask> = (values) => {
-    // if(typeof params.id === "string") {
-    //     parseInt(params.id)
-    // }
-
-    // values.project_id = parseInt(params.id as string);
-    // values.owner_user_id = 2;
-    // values.active = true;
-
-    mutate({
-      data: {
-        ...values,
-        active: true,
-        owner_user_id: 2,
-        project_id: parseInt(params.id as string),
-      },
+    mutation.mutate({
+      ...values,
+      active: true,
+      owner_user_id: 2,
+      project_id: parseInt(params.id as string),
     });
   };
 
@@ -82,22 +64,19 @@ export default function NewTaskForm({ api }: any) {
     });
   };
 
-  const { mutate, isLoading, isError } = useMutation<
-    AxiosResponse<ITask>,
-    AxiosError<any>,
-    { data: IFormInputs }
-  >({
-    mutationFn: async ({ data }) => {
-      const project = await axios
-        .post(baseURL + "tasks", data)
-        .catch(function (error) {
-          console.log(error);
-          openNotificationWithIcon("error", error.code, error.message);
-          return error;
-        });
+  const mutation = useCreateTask({
+    onSettled: (data, error) => {
+      if (data) {
+        router.push("/project/" + params.id);
+      }
 
-      router.push("/project/" + params.id);
-      return project;
+      if (error) {
+        openNotificationWithIcon(
+          "error",
+          "Error",
+          "There was an error, try again"
+        );
+      }
     },
   });
 
