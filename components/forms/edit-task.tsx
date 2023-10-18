@@ -78,7 +78,6 @@ export default function EditTaskForm({
   });
 
   const onSubmit: SubmitHandler<ITask> = (values) => {
-    // console.log(values);
     // data.project_id = parseInt(params.id as string);
     // data.owner_user_id = 2;
 
