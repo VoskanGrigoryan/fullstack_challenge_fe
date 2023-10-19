@@ -45,6 +45,8 @@ export default function CreateProject() {
   const mutation = useCreateProject({
     onSettled: (data, error) => {
       if (data) {
+        //Refresh needed FOR SOME REASON so that tiles can be updated in dashboard
+        router.refresh();
         router.push("/dashboard");
       }
 
@@ -73,14 +75,7 @@ export default function CreateProject() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-      }}
-    >
+    <form onSubmit={handleSubmit(onSubmit)}>
       {contextHolder}
       <Title level={3} style={{ marginBottom: 20 }}>
         Create new project
