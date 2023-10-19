@@ -6,7 +6,6 @@ export default async function Page() {
       style={{
         padding: 24,
         minHeight: 500,
-        maxHeight: 500,
         backgroundColor: "white",
       }}
     >
