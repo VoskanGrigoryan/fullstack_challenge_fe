@@ -1,6 +1,5 @@
 "use client";
 
-import Container from "@/components/containers/Container";
 import {
   CheckCircleOutlined,
   DeleteOutlined,
@@ -15,7 +14,6 @@ import {
   Popconfirm,
   message,
   Empty,
-  Breadcrumb,
 } from "antd";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -30,7 +28,7 @@ import { useCompleteTask } from "@/services/useCompleteTask";
 
 const { Title } = Typography;
 
-export default function Project() {
+export default function Page() {
   const router = useRouter();
   const params = useParams();
 

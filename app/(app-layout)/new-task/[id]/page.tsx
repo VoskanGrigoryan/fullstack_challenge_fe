@@ -1,26 +1,15 @@
-"use client";
+import NewTask from "@/components/views/NewTask";
 
-import Container from "@/components/containers/Container";
-import { notification } from "antd";
-
-import NewTaskForm from "@/components/forms/new-task";
-
-export default function NewTask() {
-  const [api, contextHolder] = notification.useNotification();
-
+export default function Page() {
   return (
-    <Container menuItem={""}>
-      {contextHolder}
-      <div
-        style={{
-          padding: 24,
-          minHeight: 500,
-          maxHeight: 500,
-          backgroundColor: "white",
-        }}
-      >
-        <NewTaskForm />
-      </div>
-    </Container>
+    <div
+      style={{
+        padding: 24,
+        minHeight: 500,
+        backgroundColor: "white",
+      }}
+    >
+      <NewTask />
+    </div>
   );
 }

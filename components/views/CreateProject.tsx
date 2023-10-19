@@ -1,13 +1,14 @@
 "use client";
 
 import CButton from "@/components/ui/Button";
-import { Input } from "antd";
+import { Input, Typography } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useCreateProject } from "@/services/useCreateProject";
+import { notification } from "antd";
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
@@ -23,7 +24,11 @@ const schema = yup
   })
   .required();
 
-export default function NewProjectForm({ api }: any) {
+const { Title } = Typography;
+
+export default function CreateProject() {
+  const [api, contextHolder] = notification.useNotification();
+
   const router = useRouter();
 
   const openNotificationWithIcon = (
@@ -74,10 +79,12 @@ export default function NewProjectForm({ api }: any) {
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
-        width: "50%",
       }}
     >
-      <h2 style={{ marginBottom: 20 }}>Project creation</h2>
+      {contextHolder}
+      <Title level={3} style={{ marginBottom: 20 }}>
+        Create new project
+      </Title>
       <Controller
         name="title"
         control={control}
@@ -87,7 +94,6 @@ export default function NewProjectForm({ api }: any) {
             {...field}
             status={errors.title?.message ? "error" : ""}
             maxLength={100}
-            addonBefore="Project title"
             placeholder="Title"
           />
         )}
