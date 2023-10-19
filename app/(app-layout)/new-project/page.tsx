@@ -1,25 +1,16 @@
-"use client";
+import CreateProject from "@/components/views/CreateProject";
 
-import { notification } from "antd";
-
-import NewProjectForm from "@/components/forms/new-project";
-
-export default function NewProject() {
-  const [api, contextHolder] = notification.useNotification();
-
+export default async function Page() {
   return (
-    <>
-      {contextHolder}
-      <div
-        style={{
-          padding: 24,
-          minHeight: 500,
-          maxHeight: 500,
-          backgroundColor: "white",
-        }}
-      >
-        <NewProjectForm api={api} />
-      </div>
-    </>
+    <div
+      style={{
+        padding: 24,
+        minHeight: 500,
+        maxHeight: 500,
+        backgroundColor: "white",
+      }}
+    >
+      <CreateProject />
+    </div>
   );
 }

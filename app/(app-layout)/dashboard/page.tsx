@@ -4,7 +4,7 @@ import { Empty } from "antd";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
+export default async function Page() {
   const getProjects = async () => {
     const response = await fetch(`${baseURL}projects`, {
       cache: "no-cache",
