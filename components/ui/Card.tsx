@@ -11,6 +11,8 @@ const CustomCard = ({
   extra: any;
   actions: any;
 }) => {
+  //This component wont be used because it's basically the same
+  //as making a new Card from antd every time.
   return (
     <Card
       style={{ width: "auto" }}
