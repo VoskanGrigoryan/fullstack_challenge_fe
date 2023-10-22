@@ -129,13 +129,8 @@ export default function Project() {
                       okText="Yes"
                       onConfirm={() => {
                         completeMutation.mutate({
-                          id: item.id,
-                          title: item.title,
-                          description: item.description,
-                          assigned_to: item.assigned_to,
-                          due_date: item.due_date,
-                          severity: item.severity,
-                          project_id: item.project_id,
+                          //Como todas las propiedades son iguales se puede hacer el ...
+                          ...item,
                           active: false,
                         });
                       }}
