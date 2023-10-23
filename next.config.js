@@ -8,17 +8,4 @@ module.exports = {
 
     return config;
   },
-  // async redirects() {
-  //   return [
-  //     {
-  //       source: "/",
-  //       destination: "/",
-  //       permanent: true,
-  //       basePath: false,
-  //     },
-  //   ];
-  // },
-  // experimental: {
-  //   optimizePackageImports: ["antd", "@ant-design/icons"],
-  // },
 };
