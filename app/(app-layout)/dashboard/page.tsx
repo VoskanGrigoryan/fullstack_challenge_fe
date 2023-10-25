@@ -20,11 +20,7 @@ export default async function Page() {
   const data = await getProjects();
 
   if (data.length === 0) {
-    return (
-      <div style={{ padding: 24, minHeight: 500, backgroundColor: "white" }}>
-        <Empty />
-      </div>
-    );
+    return <Empty />;
   }
 
   return <Dashboard data={data} />;
