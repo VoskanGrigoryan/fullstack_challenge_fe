@@ -1,25 +1,21 @@
-import { Breadcrumb } from "antd";
+import { Breadcrumbs } from "@mantine/core";
+import Link from "next/link";
 
-export default function CBreadCrumb({
+export default function BreadCrumb({
   referenceUrl,
   projectTitle,
 }: {
   referenceUrl: string;
   projectTitle: string | undefined;
 }) {
-  return (
-    <Breadcrumb
-      items={[
-        {
-          title: <a href="/dashboard">Dashboard</a>,
-        },
-        {
-          title: <p>Project</p>,
-        },
-        {
-          title: <a href={referenceUrl}>{projectTitle}</a>,
-        },
-      ]}
-    />
-  );
+  const items = [
+    { title: "Dashboard", href: "/dashboard" },
+    { title: projectTitle, href: referenceUrl },
+  ].map((item, index) => (
+    <Link href={item.href} key={index}>
+      {item.title}
+    </Link>
+  ));
+
+  return <Breadcrumbs>{items}</Breadcrumbs>;
 }

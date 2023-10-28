@@ -1,100 +1,74 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { KeyOutlined, UserOutlined } from "@ant-design/icons";
-import { Input, Typography } from "antd";
-import CButton from "@/components/ui/Button";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-
-type IFormInputs = {
-  username: string;
-  password: string;
-};
-
-const schema = yup
-  .object({
-    username: yup.string().required(),
-    password: yup.string().required(),
-  })
-  .required();
-
-const { Text } = Typography;
+import { loginSchema } from "@/schemas";
+import { Text, Input, PasswordInput } from "@mantine/core";
+import { IconKey, IconUser } from "@tabler/icons-react";
+import { IFormLogin } from "@/interfaces";
+import CustomButton from "@/components/ui/Button";
+import Link from "next/link";
 
 export default function Login() {
   const router = useRouter();
 
-  const [userData, setUserData] = useState<IFormInputs>();
+  const [userData, setUserData] = useState<IFormLogin>();
 
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<IFormInputs>({
-    resolver: yupResolver(schema),
+  } = useForm<IFormLogin>({
+    resolver: yupResolver(loginSchema),
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
+  const onSubmit: SubmitHandler<IFormLogin> = (data) => {
     setUserData(data), router.push("/dashboard");
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-      }}
-    >
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Controller
         name="username"
         control={control}
         rules={{ required: true }}
         render={({ field }) => (
-          <Input
-            {...field}
-            status={errors.username?.message ? "error" : ""}
-            placeholder="Username"
-            style={{ marginTop: "12px" }}
-            prefix={<UserOutlined />}
-          />
+          <Input.Wrapper
+            mb="sm"
+            label="Username"
+            error={errors.username?.message ? errors.username?.message : ""}
+          >
+            <Input
+              {...field}
+              placeholder="marge.simpson"
+              leftSection={<IconUser size={16} />}
+            />
+          </Input.Wrapper>
         )}
       />
-
-      <p style={{ padding: 0, margin: 0, color: "red" }}>
-        {errors.username?.message}
-      </p>
 
       <Controller
         name="password"
         control={control}
         rules={{ required: true }}
         render={({ field }) => (
-          <Input.Password
+          <PasswordInput
             {...field}
-            status={errors.password?.message ? "error" : ""}
-            placeholder="input password"
-            style={{ marginTop: "12px" }}
-            prefix={<KeyOutlined />}
+            label="Password"
+            error={errors.password?.message ? "error" : ""}
+            placeholder="User password"
+            leftSection={<IconKey size={16} />}
           />
         )}
       />
 
-      <p style={{ padding: 0, margin: 0, color: "red" }}>
-        {errors.password?.message}
-      </p>
-
-      <div style={{ marginTop: 20 }}>
-        <CButton htmlType="submit" type="primary">
-          Login
-        </CButton>
-      </div>
-      <Text style={{ marginTop: "12px", textAlign: "center" }}>
+      <CustomButton type="submit" style={{ marginTop: 20 }}>
+        Login
+      </CustomButton>
+      <Text size="sm" mt="sm">
         Don't have an account yet? <Link href="/auth/register">Register</Link>
       </Text>
     </form>

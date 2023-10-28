@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import Providers from "./provider";
 import "@mantine/core/styles.css";
-
+import "@mantine/notifications/styles.css";
+import "./globals.css";
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
 
 const inter = Montserrat({ subsets: ["latin"] });
 
@@ -31,8 +33,9 @@ export default function RootLayout({
             headings: { fontFamily: "Greycliff CF, sans-serif" },
           }}
         >
+          <Notifications position="top-right" zIndex={1000} limit={2} />
           <ModalsProvider>
-            <Providers>{children} </Providers>
+            <Providers>{children}</Providers>
           </ModalsProvider>
         </MantineProvider>
       </body>

@@ -1,8 +1,8 @@
-import { MenuUnfoldOutlined } from "@ant-design/icons";
-import { Dropdown, MenuProps } from "antd";
 import { useRouter } from "next/navigation";
+import { Menu, rem } from "@mantine/core";
+import { IconSwitch, IconFilePlus, IconMenu2 } from "@tabler/icons-react";
 
-export default function TaskMenu({
+export default function CustomMenu({
   id,
   showCompletedTask,
   setShowCompletedTask,
@@ -13,34 +13,32 @@ export default function TaskMenu({
 }) {
   const router = useRouter();
 
-  const items: MenuProps["items"] = [
-    {
-      key: "1",
-      label: (
-        <p
+  return (
+    <Menu shadow="md" position="bottom-end">
+      <Menu.Target>
+        <IconMenu2 style={{ cursor: "pointer" }} />
+      </Menu.Target>
+
+      <Menu.Dropdown>
+        <Menu.Item
           onClick={() => {
             router.push("/new-task/" + id);
           }}
+          leftSection={
+            <IconFilePlus style={{ width: rem(14), height: rem(14) }} />
+          }
         >
           Create new task
-        </p>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <p onClick={() => setShowCompletedTask(!showCompletedTask)}>
+        </Menu.Item>
+        <Menu.Item
+          onClick={() => setShowCompletedTask(!showCompletedTask)}
+          leftSection={
+            <IconSwitch style={{ width: rem(14), height: rem(14) }} />
+          }
+        >
           Toggle completed tasks
-        </p>
-      ),
-    },
-  ];
-
-  return (
-    <Dropdown menu={{ items }}>
-      <p style={{ cursor: "pointer" }}>
-        <MenuUnfoldOutlined style={{ fontSize: 20 }} />
-      </p>
-    </Dropdown>
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   );
 }

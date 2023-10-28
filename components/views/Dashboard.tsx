@@ -1,11 +1,13 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import { useRouter } from "next/navigation";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { baseURL } from "@/config/api";
 import { useMutation } from "@tanstack/react-query";
-import { Grid, Card, Text, Badge, Button, Group } from "@mantine/core";
+import { Card, Text, SimpleGrid, Group } from "@mantine/core";
 import { modals } from "@mantine/modals";
+import { IconTrash } from "@tabler/icons-react";
 
 type Response = {
   id: number;
@@ -41,84 +43,55 @@ export default function Dashboard({ data }: { data: Response[] }) {
       title: "Please confirm your action",
       children: (
         <Text size="sm">
-          This action is so important that you are required to confirm it with a
-          modal. Please click one of these buttons to proceed.
+          Are you sure you want to delete this project? This action is can't be
+          undone
         </Text>
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },
-      onCancel: () => console.log("Cancel"),
+      // onCancel: () => console.log("Cancel"),
       onConfirm: () => {
-        console.log(id), mutate({ id });
+        mutate({ id });
       },
     });
 
   return (
     <div style={{ padding: 48 }}>
-      <Grid>
+      <SimpleGrid cols={3}>
         {data?.map((item: any, key: number) => {
           let itemId = item.id;
           return (
-            <Grid.Col key={key} span={4}>
-              {/* <Card
-                title={item.title}
-                bordered={false}
-                extra={<ProjectMenu id={itemId} mutate={mutate} />}
-                style={{
-                  maxHeight: "400px",
+            <Card
+              padding="lg"
+              radius="md"
+              withBorder
+              style={{ width: "auto", minWidth: 250, maxWidth: 300 }}
+              key={key}
+            >
+              <Group justify="space-between" mb="xs">
+                <Text fw={600}>{item.title}</Text>
+
+                <IconTrash
+                  style={{ color: "salmon", cursor: "pointer" }}
+                  stroke={1.5}
+                  onClick={() => {
+                    openModal({ id: itemId });
+                  }}
+                />
+              </Group>
+
+              <Text
+                size="sm"
+                style={{ cursor: "pointer", height: "auto" }}
+                onClick={() => {
+                  router.push(`/project/${itemId}`);
                 }}
-                key={key}
               >
-                <p
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    router.push(`/project/${itemId}`);
-                  }}
-                >
-                  {item.description}
-                </p>
-              </Card> */}
-              <Card
-                shadow="md"
-                padding="lg"
-                radius="md"
-                withBorder
-                style={{ width: 320 }}
-              >
-                <Group justify="space-between" mb="xs">
-                  <Text fw={500}>{item.title}</Text>
-                </Group>
-
-                <Text
-                  size="sm"
-                  c="dimmed"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    router.push(`/project/${itemId}`);
-                  }}
-                >
-                  {item.description}
-                </Text>
-
-                <Button
-                  variant="light"
-                  color="red"
-                  fullWidth
-                  mt="md"
-                  radius="md"
-                  onClick={() => {
-                    openModal(itemId);
-                  }}
-                >
-                  Remove
-                </Button>
-              </Card>
-            </Grid.Col>
+                {item.description}
+              </Text>
+            </Card>
           );
         })}
-      </Grid>
-      {/* <Row>
-        
-      </Row> */}
+      </SimpleGrid>
     </div>
   );
 }

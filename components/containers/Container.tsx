@@ -10,6 +10,7 @@ import {
 } from "@tabler/icons-react";
 import classes from "./NavbarSegmented.module.css";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface IProps {
   children: React.ReactNode;
@@ -22,12 +23,14 @@ const data = [
 ];
 
 export default function Container({ children }: IProps) {
+  const pathname = usePathname();
+
   const [active, setActive] = useState("Dashboard");
 
   const links = data.map((item) => (
     <Link
       className={classes.link}
-      data-active={item.label === active || undefined}
+      data-active={item.link === pathname || undefined}
       href={item.link}
       key={item.label}
       onClick={() => {
@@ -40,7 +43,9 @@ export default function Container({ children }: IProps) {
   ));
 
   return (
-    <div style={{ display: "flex" }}>
+    <div
+      style={{ display: "flex", backgroundColor: "#F4F4F4", height: "100vh" }}
+    >
       <nav className={classes.navbar}>
         <div className={classes.navbarMain}>{links}</div>
 
@@ -55,7 +60,7 @@ export default function Container({ children }: IProps) {
           </Link>
         </div>
       </nav>
-      {children}
+      <div className={classes.body}>{children}</div>
     </div>
   );
 }

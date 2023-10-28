@@ -1,16 +1,14 @@
 "use client";
 
-import CButton from "@/components/ui/Button";
-import { Input, Typography } from "antd";
-import TextArea from "antd/es/input/TextArea";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useCreateProject } from "@/services/useCreateProject";
-import { notification } from "antd";
-
-type NotificationType = "success" | "info" | "warning" | "error";
+import { Input, Textarea, Paper } from "@mantine/core";
+import CustomButton from "../ui/Button";
+import { IconX } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
 
 interface IProject {
   title: string;
@@ -19,28 +17,13 @@ interface IProject {
 
 const schema = yup
   .object({
-    title: yup.string().required(),
-    description: yup.string().required(),
+    title: yup.string().required().max(100).min(4),
+    description: yup.string().required().max(500).min(2),
   })
   .required();
 
-const { Title } = Typography;
-
 export default function CreateProject() {
-  const [api, contextHolder] = notification.useNotification();
-
   const router = useRouter();
-
-  const openNotificationWithIcon = (
-    type: NotificationType,
-    title?: string,
-    description?: string
-  ) => {
-    api[type]({
-      message: title,
-      description: description,
-    });
-  };
 
   const mutation = useCreateProject({
     onSettled: (data, error) => {
@@ -51,11 +34,14 @@ export default function CreateProject() {
       }
 
       if (error) {
-        openNotificationWithIcon(
-          "error",
-          "Error",
-          "There was an error, try again"
-        );
+        notifications.show({
+          autoClose: 3000,
+          title: "There was an error",
+          message: JSON.stringify(error.message),
+          icon: <IconX />,
+          loading: false,
+          color: "red",
+        });
       }
     },
   });
@@ -75,55 +61,54 @@ export default function CreateProject() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {contextHolder}
-      <Title level={3} style={{ marginBottom: 20 }}>
-        Create new project
-      </Title>
-      <Controller
-        name="title"
-        control={control}
-        rules={{ required: true }}
-        render={({ field }) => (
-          <Input
-            {...field}
-            status={errors.title?.message ? "error" : ""}
-            maxLength={100}
-            placeholder="Title"
-          />
-        )}
-      />
+    <Paper
+      shadow="md"
+      px="lg"
+      py="xs"
+      style={{ margin: 40, height: "fit-content" }}
+    >
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          name="title"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Input.Wrapper
+              label="Project title"
+              error={errors.title?.message ? errors.title?.message : ""}
+            >
+              <Input {...field} placeholder="Full stack project" />
+            </Input.Wrapper>
+          )}
+        />
 
-      <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
-        {errors.title?.message}
-      </p>
+        <Controller
+          name="description"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Textarea
+              style={{ marginTop: 20 }}
+              {...field}
+              minRows={6}
+              maxRows={10}
+              autosize
+              error={
+                errors.description?.message ? errors.description?.message : ""
+              }
+              label="Project description"
+            />
+          )}
+        />
 
-      <Controller
-        name="description"
-        control={control}
-        rules={{ required: true }}
-        render={({ field }) => (
-          <TextArea
-            {...field}
-            status={errors.description?.message ? "error" : ""}
-            maxLength={500}
-            placeholder="Short description of the project, what are the objectives and core ideas"
-            autoSize={{ minRows: 8, maxRows: 5 }}
-          />
-        )}
-      />
-
-      <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
-        {errors.description?.message}
-      </p>
-
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={{ marginRight: 20 }}>
-          <CButton htmlType="submit" type="primary">
-            Create project
-          </CButton>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ marginRight: 20, marginTop: 20 }}>
+            <CustomButton type="submit" size="xs">
+              Create project
+            </CustomButton>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </Paper>
   );
 }

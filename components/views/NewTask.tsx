@@ -1,42 +1,23 @@
 "use client";
 
-import { Input, Mentions, Select, Typography } from "antd";
-import TextArea from "antd/es/input/TextArea";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import CButton from "../ui/Button";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { useCreateTask } from "@/services/useCreateTask";
-import { notification } from "antd";
-import { Col, Row } from "antd";
-
-type NotificationType = "success" | "info" | "warning" | "error";
-
-interface ITask {
-  title: string;
-  description: string;
-  assigned_to: string;
-  severity: number;
-  task_type: string;
-}
-
-const { Title } = Typography;
-
-const schema = yup
-  .object({
-    title: yup.string().required(),
-    description: yup.string().required(),
-    assigned_to: yup.string().required("assigned to is a required field"),
-    severity: yup.number().positive().integer().required(),
-    task_type: yup.string().required("task type is a required field"),
-  })
-  .required();
+import CustomButton from "../ui/Button";
+import {
+  Group,
+  SimpleGrid,
+  Text,
+  Input,
+  Textarea,
+  Select,
+} from "@mantine/core";
+import { schema } from "@/schemas";
+import { ITask } from "@/interfaces";
 
 export default function NewTask() {
-  const [api, contextHolder] = notification.useNotification();
-
   const params = useParams();
   const router = useRouter();
 
@@ -57,17 +38,6 @@ export default function NewTask() {
     });
   };
 
-  const openNotificationWithIcon = (
-    type: NotificationType,
-    title?: string,
-    description?: string
-  ) => {
-    api[type]({
-      message: title,
-      description: description,
-    });
-  };
-
   const mutation = useCreateTask({
     onSettled: (data, error) => {
       if (data) {
@@ -75,94 +45,85 @@ export default function NewTask() {
       }
 
       if (error) {
-        openNotificationWithIcon(
-          "error",
-          "Error",
-          "There was an error, try again"
-        );
       }
     },
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {contextHolder}
-      <Title level={2}>Create new task</Title>
-      <Row gutter={48}>
-        <Col xs={24} md={12} lg={12} xl={12}>
-          {" "}
+    <form onSubmit={handleSubmit(onSubmit)} style={{ padding: 48 }}>
+      <Group
+        justify="space-between"
+        mb={"md"}
+        style={{ backgroundColor: "white", padding: 12, borderRadius: 4 }}
+      >
+        <Text fw={500}>New task</Text>
+        <Group grow wrap="nowrap">
+          <CustomButton type="submit" style={{ width: 200 }}>
+            Confirm
+          </CustomButton>
+          <CustomButton
+            variant="outline"
+            onClick={() => {
+              router.back();
+            }}
+          >
+            Return
+          </CustomButton>
+        </Group>
+      </Group>
+      <SimpleGrid cols={2}>
+        <div>
           <Controller
             name="title"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
-              <Input
-                {...field}
-                status={errors.title?.message ? "error" : ""}
-                maxLength={100}
-                placeholder="Title"
-              />
+              <Input.Wrapper
+                style={{ marginBottom: 20 }}
+                label="Task title"
+                error={errors.title?.message ? errors.title?.message : ""}
+              >
+                <Input {...field} placeholder="Add MERN operations" />
+              </Input.Wrapper>
             )}
           />
-          <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
-            {errors.title?.message}
-          </p>
+
           <Controller
             name="description"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
-              <TextArea
+              <Textarea
+                style={{ marginTop: 20 }}
                 {...field}
-                status={errors.description?.message ? "error" : ""}
-                maxLength={500}
-                placeholder="Short description of the task, what are the objectives and core ideas"
-                autoSize={{ minRows: 8, maxRows: 5 }}
+                minRows={6}
+                maxRows={10}
+                autosize
+                error={
+                  errors.description?.message ? errors.description?.message : ""
+                }
+                label="Project description"
               />
             )}
           />
-          <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
-            {errors.description?.message}
-          </p>
-          <CButton htmlType="submit" type="primary">
-            Create task
-          </CButton>
-        </Col>
-        <Col xs={24} md={12} lg={12} xl={12}>
+        </div>
+        <div>
           <Controller
             name="assigned_to"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
-              <Mentions
-                {...field}
-                status={errors.assigned_to?.message ? "error" : ""}
-                style={{ width: "100%" }}
-                placeholder="@homero.simpson"
-                defaultValue=""
-                options={[
-                  {
-                    value: "voskan.grigoryan",
-                    label: "voskan.grigoryan",
-                  },
-                  {
-                    value: "homero.simpson",
-                    label: "homero.simpson",
-                  },
-                  {
-                    value: "marge.simpson",
-                    label: "marge.simpson",
-                  },
-                ]}
-              />
+              <Input.Wrapper
+                label="Assigned to"
+                error={
+                  errors.assigned_to?.message ? errors.assigned_to?.message : ""
+                }
+              >
+                <Input {...field} placeholder="homero.simpson" />
+              </Input.Wrapper>
             )}
           />
 
-          <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
-            {errors.assigned_to?.message}
-          </p>
-
-          <p>Severity:</p>
           <Controller
             name="severity"
             control={control}
@@ -170,48 +131,33 @@ export default function NewTask() {
             render={({ field }) => (
               <Select
                 {...field}
-                status={errors.severity?.message ? "error" : ""}
-                defaultValue=""
-                style={{ width: "100%" }}
-                options={[
-                  { value: 1, label: "1" },
-                  { value: 2, label: "2" },
-                  { value: 3, label: "3" },
-                  { value: 4, label: "4" },
-                ]}
+                value={String(field.value)}
+                error={errors.severity?.message ? errors.severity?.message : ""}
+                label="Severity"
+                data={["1", "2", "3", "4"]}
+                mt="lg"
               />
             )}
           />
 
-          <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
-            {errors.severity?.message}
-          </p>
-
-          <p>Task type:</p>
           <Controller
             name="task_type"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
               <Select
+                error={
+                  errors.task_type?.message ? errors.task_type?.message : ""
+                }
                 {...field}
-                status={errors.task_type?.message ? "error" : ""}
-                defaultValue=""
-                style={{ width: "100%" }}
-                options={[
-                  { value: "task", label: "Task" },
-                  { value: "bug", label: "Bug" },
-                  { value: "issue", label: "Issue" },
-                ]}
+                label="Task type"
+                data={["task", "bug", "issue"]}
+                mt="lg"
               />
             )}
           />
-
-          <p style={{ padding: 0, margin: 0, color: "red", marginBottom: 12 }}>
-            {errors.task_type?.message}
-          </p>
-        </Col>
-      </Row>
+        </div>
+      </SimpleGrid>
     </form>
   );
 }

@@ -1,31 +1,29 @@
-import {
-  BugOutlined,
-  ExperimentOutlined,
-  ProfileOutlined,
-} from "@ant-design/icons";
-import { Tooltip } from "antd";
+import { ExperimentOutlined } from "@ant-design/icons";
+import { IconBug, IconChecklist } from "@tabler/icons-react";
+import { Tooltip } from "@mantine/core";
+import { IconAtom } from "@tabler/icons-react";
 
 export default function TaskType({ task_type }: { task_type: string }) {
   if (task_type === "bug") {
     return (
-      <Tooltip title="Bug">
-        <BugOutlined style={{ color: "purple", fontSize: 20 }} />
+      <Tooltip label="Bug">
+        <IconBug style={{ color: "purple", fontSize: 20 }} />
       </Tooltip>
     );
   }
 
   if (task_type === "task") {
     return (
-      <Tooltip title="Task">
-        <ProfileOutlined style={{ color: "DodgerBlue", fontSize: 20 }} />
+      <Tooltip label="Task">
+        <IconChecklist style={{ color: "DodgerBlue", fontSize: 20 }} />
       </Tooltip>
     );
   }
 
   if (task_type === "issue") {
     return (
-      <Tooltip title="Issue">
-        <ExperimentOutlined style={{ color: "red", fontSize: 20 }} />
+      <Tooltip label="Issue">
+        <IconAtom style={{ color: "red", fontSize: 20 }} />
       </Tooltip>
     );
   }
