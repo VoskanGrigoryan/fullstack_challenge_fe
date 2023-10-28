@@ -1,4 +1,4 @@
-import { Card } from "antd";
+import { Paper } from "@mantine/core";
 
 interface Props {
   children: React.ReactNode;
@@ -16,9 +16,9 @@ export default function AuthContainer({ children }: Props) {
         alignItems: "center",
       }}
     >
-      <Card title="Full Stack Application" style={{ width: 300 }}>
+      <Paper shadow="md" radius="sm" p="xl">
         {children}
-      </Card>
+      </Paper>
     </div>
   );
 }

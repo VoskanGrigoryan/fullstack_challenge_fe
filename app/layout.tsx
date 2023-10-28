@@ -1,8 +1,12 @@
-import "./globals.css";
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
-import { RootStyleRegistry } from "@/util/root-style-registry";
 import Providers from "./provider";
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
+import "./globals.css";
+import { MantineProvider, ColorSchemeScript } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
 
 const inter = Montserrat({ subsets: ["latin"] });
 
@@ -18,11 +22,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <RootStyleRegistry>
-        <Providers>
-          <body className={inter.className}>{children}</body>
-        </Providers>
-      </RootStyleRegistry>
+      <head>
+        <ColorSchemeScript />
+      </head>
+      <body className={inter.className}>
+        <MantineProvider
+          theme={{
+            fontFamily: "Verdana, sans-serif",
+            fontFamilyMonospace: "Monaco, Courier, monospace",
+            headings: { fontFamily: "Greycliff CF, sans-serif" },
+          }}
+        >
+          <Notifications position="top-right" zIndex={1000} limit={2} />
+          <ModalsProvider>
+            <Providers>{children}</Providers>
+          </ModalsProvider>
+        </MantineProvider>
+      </body>
     </html>
   );
 }

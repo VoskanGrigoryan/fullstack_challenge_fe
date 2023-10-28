@@ -1,6 +1,6 @@
+import NoData from "@/components/ui/NoData";
 import Dashboard from "@/components/views/Dashboard";
 import { baseURL } from "@/config/api";
-import { Empty } from "antd";
 
 export const dynamic = "force-dynamic";
 
@@ -20,11 +20,7 @@ export default async function Page() {
   const data = await getProjects();
 
   if (data.length === 0) {
-    return (
-      <div style={{ padding: 24, minHeight: 500, backgroundColor: "white" }}>
-        <Empty />
-      </div>
-    );
+    return <NoData />;
   }
 
   return <Dashboard data={data} />;

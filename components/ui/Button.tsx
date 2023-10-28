@@ -1,19 +1,29 @@
-import { Button, ButtonProps } from "antd";
+// import { Button, ButtonProps } from "antd";
+import { Button, ButtonProps } from "@mantine/core";
+import { ComponentProps, ComponentPropsWithoutRef } from "react";
 
-//interface llamada buttonProps extiende los props del elemento button nativo de react
-//Lo que esta dentro de llaves son- los props custom, text no existe en el elemento button
-interface BaseButtonProps extends ButtonProps {}
+//Mix del button props de mantine con el button props de html
+type CustomButtonProps = ButtonProps & ComponentPropsWithoutRef<"button"> & {};
 
-const CButton = ({ children, type = "primary", ...props }: BaseButtonProps) => {
+const CustomButton = ({
+  children,
+  size = "xs",
+  variant = "filled",
+  color = "blue",
+  ...props
+}: CustomButtonProps) => {
   return (
     <Button
-      type={type}
       {...props}
-      style={{ minWidth: 140, width: "100%", marginBottom: 8 }}
+      radius="sm"
+      variant={variant}
+      color={color}
+      size={size}
+      fullWidth
     >
       {children}
     </Button>
   );
 };
 
-export default CButton;
+export default CustomButton;

@@ -1,16 +1,16 @@
-import { Spin } from "antd";
+import { Loader } from "@mantine/core";
 
 export default function Loading() {
   return (
     <div
       style={{
         display: "flex",
-        alignItems: "center",
         justifyContent: "center",
+        alignItems: "center",
         height: "100vh",
       }}
     >
-      <Spin size="large" />
+      <Loader color="blue" size="lg" />
     </div>
   );
 }

@@ -1,11 +1,13 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import { Card, Col, Row } from "antd";
-import ProjectMenu from "../ui/menus/projectMenu";
 import { useRouter } from "next/navigation";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { baseURL } from "@/config/api";
 import { useMutation } from "@tanstack/react-query";
+import { Card, Text, SimpleGrid, Group } from "@mantine/core";
+import { modals } from "@mantine/modals";
+import { IconTrash } from "@tabler/icons-react";
 
 type Response = {
   id: number;
@@ -36,37 +38,60 @@ export default function Dashboard({ data }: { data: Response[] }) {
     },
   });
 
+  const openModal = ({ id }: any) =>
+    modals.openConfirmModal({
+      title: "Please confirm your action",
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete this project? This action is can't be
+          undone
+        </Text>
+      ),
+      labels: { confirm: "Confirm", cancel: "Cancel" },
+      // onCancel: () => console.log("Cancel"),
+      onConfirm: () => {
+        mutate({ id });
+      },
+    });
+
   return (
-    <div style={{ padding: 24, minHeight: 500 }}>
-      <Row>
+    <div style={{ padding: 48 }}>
+      <SimpleGrid cols={3}>
         {data?.map((item: any, key: number) => {
           let itemId = item.id;
           return (
-            <Col key={key} lg={{ span: 7 }} md={{ span: 12 }} xs={{ span: 24 }}>
-              <Card
-                title={item.title}
-                bordered={false}
-                extra={<ProjectMenu id={itemId} mutate={mutate} />}
-                style={{
-                  width: "300px",
-                  maxHeight: "400px",
-                  marginBottom: 10,
-                }}
-                key={key}
-              >
-                <p
-                  style={{ cursor: "pointer" }}
+            <Card
+              padding="lg"
+              radius="md"
+              withBorder
+              style={{ width: "auto", minWidth: 250, maxWidth: 300 }}
+              key={key}
+            >
+              <Group justify="space-between" mb="xs">
+                <Text fw={600}>{item.title}</Text>
+
+                <IconTrash
+                  style={{ color: "salmon", cursor: "pointer" }}
+                  stroke={1.5}
                   onClick={() => {
-                    router.push(`/project/${itemId}`);
+                    openModal({ id: itemId });
                   }}
-                >
-                  {item.description}
-                </p>
-              </Card>
-            </Col>
+                />
+              </Group>
+
+              <Text
+                size="sm"
+                style={{ cursor: "pointer", height: "auto" }}
+                onClick={() => {
+                  router.push(`/project/${itemId}`);
+                }}
+              >
+                {item.description}
+              </Text>
+            </Card>
           );
         })}
-      </Row>
+      </SimpleGrid>
     </div>
   );
 }

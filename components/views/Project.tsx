@@ -1,32 +1,21 @@
 "use client";
 
-import {
-  CheckCircleOutlined,
-  DeleteOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
-import {
-  Card,
-  Col,
-  Row,
-  Typography,
-  Skeleton,
-  Popconfirm,
-  message,
-  Empty,
-} from "antd";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import TaskMenu from "@/components/ui/menus/tasks";
 import TaskType from "@/components/util/TaskType";
 import useGetProjectById from "@/services/useGetProject";
 import { useDeleteTaskById } from "@/services/useDeleteTask";
 import useGetTasks from "@/services/useGetTasks";
-import CBreadCrumb from "@/components/ui/Breadcrumb";
+import BreadCrumb from "@/components/ui/Breadcrumb";
 import { useCompleteTask } from "@/services/useCompleteTask";
-
-const { Title } = Typography;
+import NoData from "../ui/NoData";
+import CustomMenu from "@/components/ui/menus/tasks";
+import { Skeleton, SimpleGrid, Group, Text, Card } from "@mantine/core";
+import CustomButton from "../ui/Button";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
 
 export default function Project() {
   const router = useRouter();
@@ -41,7 +30,14 @@ export default function Project() {
 
   const deleteMutation = useDeleteTaskById({
     onSuccess: () => {
-      message.success("Task deleted successfully! :)");
+      notifications.show({
+        autoClose: 3000,
+        title: "Task deleted successfully",
+        message: "",
+        icon: <IconCircleCheckFilled />,
+        loading: false,
+        color: "blue",
+      });
       tasks.refetch();
     },
   });
@@ -51,7 +47,14 @@ export default function Project() {
 
   const completeMutation = useCompleteTask({
     onSuccess: () => {
-      message.success("Task completed successfully! :)");
+      notifications.show({
+        autoClose: 3000,
+        title: "Task completed successfully!",
+        message: "",
+        icon: <IconCircleCheckFilled />,
+        loading: false,
+        color: "green",
+      });
       tasks.refetch();
     },
   });
@@ -61,9 +64,39 @@ export default function Project() {
 
   const referenceUrl = `/project/${params.id}`;
 
+  const confirmModal = ({
+    id,
+    item,
+    operationType,
+  }: {
+    id?: number;
+    item: any;
+    operationType: string;
+  }) =>
+    modals.openConfirmModal({
+      title: "Please confirm your action",
+      labels: { confirm: "Confirm", cancel: "Cancel" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => {
+        if (operationType === "done") {
+          completeMutation.mutate({
+            //Como todas las propiedades son iguales se puede hacer el ...
+            ...item,
+            active: false,
+          });
+        }
+
+        if (operationType === "delete") {
+          deleteMutation.mutate({
+            id: item.id,
+          });
+        }
+      },
+    });
+
   if (tasks.isError || tasks.data?.length === 0) {
     return (
-      <div style={{ padding: 24, minHeight: 500, backgroundColor: "white" }}>
+      <div style={{ padding: 48 }}>
         <div
           style={{
             display: "flex",
@@ -71,125 +104,122 @@ export default function Project() {
             justifyContent: "space-between",
           }}
         >
-          <CBreadCrumb
+          <BreadCrumb
             referenceUrl={referenceUrl}
             projectTitle={project.data?.title}
           />
-          <TaskMenu
+          <CustomMenu
             id={params.id as string}
             showCompletedTask={showCompletedTask}
             setShowCompletedTask={setShowCompletedTask}
           />
         </div>
 
-        <Empty />
+        <NoData />
       </div>
     );
   }
 
   return (
-    <div style={{ padding: 24, minHeight: 500, backgroundColor: "white" }}>
+    <div style={{ padding: 48 }}>
       <div
         style={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
+          marginBottom: 20,
         }}
       >
-        <CBreadCrumb
+        <BreadCrumb
           referenceUrl={referenceUrl}
           projectTitle={project.data?.title}
         />
-        <TaskMenu
+        <CustomMenu
           id={params.id as string}
           showCompletedTask={showCompletedTask}
           setShowCompletedTask={setShowCompletedTask}
         />
       </div>
-      <Skeleton loading={tasks.isLoading}>
-        <Title level={3}>{}</Title>
-        <Row gutter={12}>
-          {nonCompletedTasks?.map((item: any, key: number) => {
-            return (
-              <Col
-                key={key}
-                lg={{ span: 8 }}
-                xs={{ span: 24 }}
-                style={{ marginBottom: 12 }}
-              >
-                <Card
-                  title={item.title}
-                  style={{ width: "auto" }}
-                  extra={<TaskType task_type={item.task_type} />}
-                  actions={[
-                    <Popconfirm
-                      key="done"
-                      title="Complete task"
-                      description="Are you sure you want complete the task?"
-                      okText="Yes"
-                      onConfirm={() => {
-                        completeMutation.mutate({
-                          //Como todas las propiedades son iguales se puede hacer el ...
-                          ...item,
-                          active: false,
-                        });
-                      }}
-                      cancelText="No"
-                    >
-                      <CheckCircleOutlined key="done" />,
-                    </Popconfirm>,
-
-                    <EditOutlined
-                      key="edit"
-                      onClick={() => router.push("/edit-task/" + item.id)}
-                    />,
-                    <Popconfirm
-                      key="delete"
-                      title="Delete the task"
-                      description="Are you sure you want to delete the task?"
-                      okText="Yes"
-                      onConfirm={() => {
-                        // deleteMutation.mutate({ selectedItemId: item.id });
-                        deleteMutation.mutate({
-                          id: item.id,
-                        });
-                      }}
-                      cancelText="No"
-                    >
-                      <DeleteOutlined key="delete" />
-                    </Popconfirm>,
-                  ]}
-                >
-                  {item.description}
-                </Card>
-              </Col>
-            );
-          })}
-        </Row>
-
-        {showCompletedTask ? (
-          <Row gutter={12}>
-            {completedTasks?.map((item: any, key: number) => {
+      {tasks.isLoading ? (
+        <Skeleton height={50} circle mb="xl" />
+      ) : (
+        <>
+          <SimpleGrid cols={3}>
+            {nonCompletedTasks?.map((item: any, key: number) => {
               return (
-                <Col
-                  key={key}
-                  lg={{ span: 8 }}
-                  xs={{ span: 24 }}
-                  style={{ marginBottom: 12 }}
-                >
-                  <Card
-                    title={item.title}
-                    style={{ width: "auto" }}
-                    extra={<p>Completed</p>}
-                  >
+                <Card shadow="md" radius="sm" withBorder key={key}>
+                  <Group justify="space-between" mt="md" mb="xs">
+                    <Group justify="space-between">
+                      <Text fw={500}>{item.title}</Text>
+                      <Text c="blue">[{item.severity}]</Text>
+                    </Group>
+
+                    <TaskType task_type={item.task_type} />
+                  </Group>
+
+                  <Text size="sm" c="dimmed">
                     {item.description}
-                  </Card>
-                </Col>
+                  </Text>
+
+                  <Group grow wrap="nowrap" mt="md">
+                    <CustomButton
+                      variant="subtle"
+                      onClick={() => {
+                        confirmModal({ item, operationType: "done" });
+                      }}
+                    >
+                      Done
+                    </CustomButton>
+                    <CustomButton
+                      variant="subtle"
+                      onClick={() => router.push("/edit-task/" + item.id)}
+                    >
+                      Edit
+                    </CustomButton>
+                    <CustomButton
+                      variant="subtle"
+                      color="red"
+                      onClick={() => {
+                        confirmModal({ item, operationType: "delete" });
+                      }}
+                    >
+                      Delete
+                    </CustomButton>
+                  </Group>
+                </Card>
               );
             })}
-          </Row>
-        ) : null}
-      </Skeleton>
+          </SimpleGrid>
+
+          {showCompletedTask ? (
+            <SimpleGrid cols={3}>
+              {completedTasks?.map((item: any, key: number) => {
+                return (
+                  <Card
+                    withBorder
+                    key={key}
+                    style={{ width: "auto", marginTop: 16 }}
+                  >
+                    <Group justify="space-between">
+                      <Group justify="space-between" c="dimmed">
+                        <Text fw={500}>{item.title}</Text>
+                        <Text c="gray">[{item.severity}]</Text>
+                      </Group>
+                      <Text fw={500} c="blue">
+                        Completed
+                      </Text>
+                    </Group>
+
+                    <Text size="sm" c="dimmed">
+                      {item.description}
+                    </Text>
+                  </Card>
+                );
+              })}
+            </SimpleGrid>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }

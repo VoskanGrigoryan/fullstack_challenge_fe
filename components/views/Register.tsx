@@ -1,38 +1,14 @@
 "use client";
 
-import AuthContainer from "@/components/containers/AuthContainer";
-import CButton from "@/components/ui/Button";
-import { KeyOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
-import { Input, Typography } from "antd";
-import Link from "next/link";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { Input, PasswordInput, Text } from "@mantine/core";
+import { IconUser, IconKey } from "@tabler/icons-react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import CustomButton from "@/components/ui/Button";
+import { IFormInputs } from "@/interfaces";
+import { registerSchema } from "@/schemas";
 
-type IFormInputs = {
-  email: string;
-  username: string;
-  password: string;
-  confirmPassword: string;
-};
-
-interface FormInputs {
-  singleErrorInput: string;
-}
-
-const schema = yup
-  .object({
-    email: yup.string().email().required(),
-    username: yup.string().required(),
-    password: yup.string().required(),
-    confirmPassword: yup
-      .string()
-      .required("confirm password is required")
-      .oneOf([yup.ref("password")], "Passwords must match"),
-  })
-  .required();
-
-const { Text } = Typography;
+import Link from "next/link";
 
 export default function Register() {
   const {
@@ -41,18 +17,11 @@ export default function Register() {
     watch,
     formState: { errors },
   } = useForm<IFormInputs>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(registerSchema),
   });
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {};
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-      }}
-    >
+    <form onSubmit={handleSubmit(onSubmit)} style={{ width: 300 }}>
       <Controller
         name="email"
         control={control}
@@ -61,83 +30,75 @@ export default function Register() {
           pattern: /^\S+@\S+$/i,
         }}
         render={({ field }) => (
-          <Input
-            status={errors.email?.message ? "error" : ""}
-            {...field}
-            placeholder="Email"
-            style={{ marginTop: "12px" }}
-            prefix={<MailOutlined />}
-          />
+          <Input.Wrapper
+            label="Email"
+            mb="sm"
+            error={errors.email?.message ? errors.email?.message : ""}
+          >
+            <Input {...field} placeholder="Email" />
+          </Input.Wrapper>
         )}
       />
-
-      <p style={{ padding: 0, margin: 0, color: "red" }}>
-        {errors.email?.message}
-      </p>
 
       <Controller
         name="username"
         control={control}
         rules={{ required: true }}
         render={({ field }) => (
-          <Input
-            {...field}
-            status={errors.username?.message ? "error" : ""}
-            placeholder="Username"
-            style={{ marginTop: "12px" }}
-            prefix={<UserOutlined />}
-          />
+          <Input.Wrapper
+            mb="sm"
+            label="Username"
+            error={errors.username?.message ? errors.username?.message : ""}
+          >
+            <Input
+              {...field}
+              placeholder="marge.simpson"
+              leftSection={<IconUser size={16} />}
+            />
+          </Input.Wrapper>
         )}
       />
-
-      <p style={{ padding: 0, margin: 0, color: "red" }}>
-        {errors.username?.message}
-      </p>
 
       <Controller
         name="password"
         control={control}
         rules={{ required: true }}
         render={({ field }) => (
-          <Input.Password
+          <PasswordInput
             {...field}
-            status={errors.password?.message ? "error" : ""}
-            placeholder="Password"
-            style={{ marginTop: "12px" }}
-            prefix={<KeyOutlined />}
+            label="Password"
+            mb="sm"
+            error={errors.password?.message ? errors.password?.message : ""}
+            placeholder="User password"
+            leftSection={<IconKey size={16} />}
           />
         )}
       />
-
-      <p style={{ padding: 0, margin: 0, color: "red" }}>
-        {errors.password?.message}
-      </p>
 
       <Controller
         name="confirmPassword"
         control={control}
         rules={{ required: true }}
         render={({ field }) => (
-          <Input.Password
+          <PasswordInput
             {...field}
-            status={errors.confirmPassword?.message ? "error" : ""}
-            placeholder="Confirm password"
-            style={{ marginTop: "12px" }}
-            prefix={<KeyOutlined />}
+            label="Confirm password"
+            error={
+              errors.confirmPassword?.message
+                ? errors.confirmPassword?.message
+                : ""
+            }
+            placeholder="User password"
+            leftSection={<IconKey size={16} />}
           />
         )}
       />
-      <p style={{ padding: 0, margin: 0, color: "red" }}>
-        {errors.confirmPassword?.message}
-      </p>
 
-      <div style={{ marginTop: 20 }}>
-        <CButton htmlType="submit" type="primary">
-          Register
-        </CButton>
-      </div>
+      <CustomButton type="submit" mt="md">
+        Register
+      </CustomButton>
 
-      <Text style={{ marginTop: "12px", textAlign: "center" }}>
+      <Text mt="sm" size="sm">
         Already have an account? <Link href="/auth/login">Login</Link>
       </Text>
     </form>
