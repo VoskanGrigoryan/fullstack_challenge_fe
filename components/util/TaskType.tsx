@@ -1,4 +1,3 @@
-import { ExperimentOutlined } from "@ant-design/icons";
 import { IconBug, IconChecklist } from "@tabler/icons-react";
 import { Tooltip } from "@mantine/core";
 import { IconAtom } from "@tabler/icons-react";

@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 //redirect from next/navigate not working for some reason
 import CustomButton from "@/components/ui/Button";
-import { Text } from "@mantine/core";
 
 export default function Custom404() {
   const router = useRouter();
