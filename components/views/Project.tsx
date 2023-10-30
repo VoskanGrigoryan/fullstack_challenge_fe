@@ -11,17 +11,33 @@ import BreadCrumb from "@/components/ui/Breadcrumb";
 import { useCompleteTask } from "@/services/useCompleteTask";
 import NoData from "../ui/NoData";
 import CustomMenu from "@/components/ui/menus/tasks";
-import { Skeleton, SimpleGrid, Group, Text, Card } from "@mantine/core";
+import {
+  Skeleton,
+  SimpleGrid,
+  Group,
+  Text,
+  Card,
+  List,
+  ThemeIcon,
+  Paper,
+  Divider,
+} from "@mantine/core";
 import CustomButton from "../ui/Button";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { IconCircleCheckFilled } from "@tabler/icons-react";
+import {
+  IconCircleCheck,
+  IconCircleCheckFilled,
+  IconCircleDashed,
+} from "@tabler/icons-react";
 
 export default function Project() {
   const router = useRouter();
   const params = useParams();
 
   const [showCompletedTask, setShowCompletedTask] = useState(false);
+
+  const [viewType, setViewType] = useState(true);
 
   const variables = { id: params.id };
 
@@ -109,6 +125,8 @@ export default function Project() {
             projectTitle={project.data?.title}
           />
           <CustomMenu
+            viewType={viewType}
+            setViewType={setViewType}
             id={params.id as string}
             showCompletedTask={showCompletedTask}
             setShowCompletedTask={setShowCompletedTask}
@@ -135,6 +153,8 @@ export default function Project() {
           projectTitle={project.data?.title}
         />
         <CustomMenu
+          viewType={viewType}
+          setViewType={setViewType}
           id={params.id as string}
           showCompletedTask={showCompletedTask}
           setShowCompletedTask={setShowCompletedTask}
@@ -144,52 +164,131 @@ export default function Project() {
         <Skeleton height={50} circle mb="xl" />
       ) : (
         <>
-          <SimpleGrid cols={3}>
-            {nonCompletedTasks?.map((item: any, key: number) => {
-              return (
-                <Card shadow="md" radius="sm" withBorder key={key}>
-                  <Group justify="space-between" mt="md" mb="xs">
-                    <Group justify="space-between">
-                      <Text fw={500}>{item.title}</Text>
-                      <Text c="blue">[{item.severity}]</Text>
+          {viewType ? (
+            <SimpleGrid cols={3}>
+              {nonCompletedTasks?.map((item: any, key: number) => {
+                return (
+                  <Card shadow="md" radius="sm" withBorder key={key}>
+                    <Group justify="space-between" mt="md" mb="xs">
+                      <Group justify="space-between">
+                        <Text fw={500}>{item.title}</Text>
+                        <Text c="blue">[{item.severity}]</Text>
+                      </Group>
+
+                      <TaskType task_type={item.task_type} />
                     </Group>
 
+                    <Text size="sm" c="dimmed" truncate="end">
+                      {item.description}
+                    </Text>
+
+                    <Group grow wrap="nowrap" mt="md">
+                      <CustomButton
+                        variant="subtle"
+                        onClick={() => {
+                          confirmModal({ item, operationType: "done" });
+                        }}
+                      >
+                        Done
+                      </CustomButton>
+                      <CustomButton
+                        variant="subtle"
+                        onClick={() => router.push("/edit-task/" + item.id)}
+                      >
+                        Edit
+                      </CustomButton>
+                      <CustomButton
+                        variant="subtle"
+                        color="red"
+                        onClick={() => {
+                          confirmModal({ item, operationType: "delete" });
+                        }}
+                      >
+                        Delete
+                      </CustomButton>
+                    </Group>
+                  </Card>
+                );
+              })}
+            </SimpleGrid>
+          ) : (
+            <div>
+              {nonCompletedTasks?.map((item: any, key: number) => {
+                return (
+                  <Paper
+                    withBorder
+                    shadow="md"
+                    radius="xs"
+                    p="xs"
+                    style={{
+                      display: "flex",
+                    }}
+                  >
+                    <Text
+                      size="sm"
+                      fw={500}
+                      style={{ marginRight: 20, width: "20%" }}
+                    >
+                      {item.title}
+                    </Text>
+                    <Text
+                      size="sm"
+                      c="dimmed"
+                      truncate="end"
+                      style={{ width: "55%", display: "flex" }}
+                    >
+                      {item.description}
+                    </Text>
+
+                    <Text size="sm" c="blue" style={{ marginLeft: 4 }}>
+                      [{item.severity}]
+                    </Text>
+                    <Divider
+                      orientation="vertical"
+                      style={{ marginRight: 4, marginLeft: 20 }}
+                    />
                     <TaskType task_type={item.task_type} />
-                  </Group>
 
-                  <Text size="sm" c="dimmed">
-                    {item.description}
-                  </Text>
-
-                  <Group grow wrap="nowrap" mt="md">
-                    <CustomButton
-                      variant="subtle"
-                      onClick={() => {
-                        confirmModal({ item, operationType: "done" });
-                      }}
+                    <Group
+                      grow
+                      wrap="nowrap"
+                      style={{ width: "25%", marginLeft: 20 }}
+                      gap="xs"
                     >
-                      Done
-                    </CustomButton>
-                    <CustomButton
-                      variant="subtle"
-                      onClick={() => router.push("/edit-task/" + item.id)}
-                    >
-                      Edit
-                    </CustomButton>
-                    <CustomButton
-                      variant="subtle"
-                      color="red"
-                      onClick={() => {
-                        confirmModal({ item, operationType: "delete" });
-                      }}
-                    >
-                      Delete
-                    </CustomButton>
-                  </Group>
-                </Card>
-              );
-            })}
-          </SimpleGrid>
+                      <Text
+                        c="blue"
+                        size="sm"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          confirmModal({ item, operationType: "done" });
+                        }}
+                      >
+                        Done
+                      </Text>
+                      <Text
+                        size="sm"
+                        style={{ cursor: "pointer" }}
+                        c="blue"
+                        onClick={() => router.push("/edit-task/" + item.id)}
+                      >
+                        Edit
+                      </Text>
+                      <Text
+                        size="sm"
+                        style={{ cursor: "pointer" }}
+                        c="red"
+                        onClick={() => {
+                          confirmModal({ item, operationType: "delete" });
+                        }}
+                      >
+                        Delete
+                      </Text>
+                    </Group>
+                  </Paper>
+                );
+              })}
+            </div>
+          )}
 
           {showCompletedTask ? (
             <SimpleGrid cols={3}>

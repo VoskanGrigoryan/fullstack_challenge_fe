@@ -1,12 +1,22 @@
 import { useRouter } from "next/navigation";
 import { Menu, rem } from "@mantine/core";
-import { IconSwitch, IconFilePlus, IconMenu2 } from "@tabler/icons-react";
+import {
+  IconSwitch,
+  IconFilePlus,
+  IconMenu2,
+  IconList,
+  IconNotes,
+} from "@tabler/icons-react";
 
 export default function CustomMenu({
+  viewType,
+  setViewType,
   id,
   showCompletedTask,
   setShowCompletedTask,
 }: {
+  viewType: boolean;
+  setViewType: any;
   id: string;
   showCompletedTask: any;
   setShowCompletedTask: any;
@@ -30,6 +40,22 @@ export default function CustomMenu({
         >
           Create new task
         </Menu.Item>
+
+        <Menu.Item
+          onClick={() => {
+            setViewType(!viewType);
+          }}
+          leftSection={
+            viewType === true ? (
+              <IconList style={{ width: rem(14), height: rem(14) }} />
+            ) : (
+              <IconNotes style={{ width: rem(14), height: rem(14) }} />
+            )
+          }
+        >
+          Switch view type
+        </Menu.Item>
+
         <Menu.Item
           onClick={() => setShowCompletedTask(!showCompletedTask)}
           leftSection={

@@ -1,6 +1,6 @@
 // import { Button, ButtonProps } from "antd";
 import { Button, ButtonProps } from "@mantine/core";
-import { ComponentProps, ComponentPropsWithoutRef } from "react";
+import { ComponentPropsWithoutRef } from "react";
 
 //Mix del button props de mantine con el button props de html
 type CustomButtonProps = ButtonProps & ComponentPropsWithoutRef<"button"> & {};
