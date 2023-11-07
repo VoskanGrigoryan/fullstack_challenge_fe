@@ -216,6 +216,7 @@ export default function Project() {
               {nonCompletedTasks?.map((item: any, key: number) => {
                 return (
                   <Paper
+                    key={key}
                     withBorder
                     shadow="md"
                     radius="xs"
